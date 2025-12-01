@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using UnityEngine;
 
@@ -67,6 +68,10 @@ public class AbilityDatabase : MonoBehaviour
     [Tooltip("JSON file describing all abilities.")]
     public TextAsset abilityJson;
 
+    [Header("Fallback JSON files (StreamingAssets)")]
+    [Tooltip("If abilityJson is not assigned, the database will attempt to load these files from StreamingAssets.")]
+    public string[] streamingJsonFiles = { "abilities.json", "abilities_generic.json", "abilities_bow.json" };
+
     // Public list to match existing code that accesses AbilityDatabase.Instance.abilities
     [Tooltip("All loaded abilities from the JSON definition.")]
     public List<AbilityData> abilities = new List<AbilityData>();
@@ -92,42 +97,108 @@ public class AbilityDatabase : MonoBehaviour
         _abilitiesById.Clear();
         abilities.Clear();
 
-        if (abilityJson == null)
+        bool loadedAny = false;
+
+        if (abilityJson != null && !string.IsNullOrWhiteSpace(abilityJson.text))
         {
-            Debug.LogWarning("AbilityDatabase: No abilityJson assigned.");
+            loadedAny |= TryAddAbilitiesFromJson(abilityJson.text, "abilityJson TextAsset");
+        }
+        else
+        {
+            Debug.LogWarning("AbilityDatabase: No abilityJson assigned. Attempting to load from StreamingAssets.");
+        }
+
+        if (!loadedAny)
+        {
+            loadedAny |= LoadAbilitiesFromStreamingAssets();
+        }
+
+        if (!loadedAny)
+        {
+            Debug.LogError("AbilityDatabase: Failed to load any abilities. Check JSON configuration.");
             return;
         }
 
-        AbilityListWrapper wrapper = JsonUtility.FromJson<AbilityListWrapper>(abilityJson.text);
+        Debug.Log($"AbilityDatabase: Loaded {_abilitiesById.Count} abilities from JSON.");
+    }
+
+    private bool LoadAbilitiesFromStreamingAssets()
+    {
+        bool anyLoaded = false;
+
+        if (streamingJsonFiles == null || streamingJsonFiles.Length == 0)
+            return false;
+
+        foreach (string fileName in streamingJsonFiles)
+        {
+            if (string.IsNullOrWhiteSpace(fileName))
+                continue;
+
+            string path = Path.Combine(Application.streamingAssetsPath, fileName);
+            if (!System.IO.File.Exists(path))
+            {
+                Debug.LogWarning($"AbilityDatabase: StreamingAssets file not found at {path}");
+                continue;
+            }
+
+            string jsonText = System.IO.File.ReadAllText(path);
+            if (string.IsNullOrWhiteSpace(jsonText))
+            {
+                Debug.LogWarning($"AbilityDatabase: StreamingAssets file {fileName} is empty.");
+                continue;
+            }
+
+            if (TryAddAbilitiesFromJson(jsonText, fileName))
+            {
+                anyLoaded = true;
+            }
+        }
+
+        return anyLoaded;
+    }
+
+    private bool TryAddAbilitiesFromJson(string jsonText, string sourceLabel)
+    {
+        AbilityListWrapper wrapper = JsonUtility.FromJson<AbilityListWrapper>(jsonText);
         if (wrapper == null || wrapper.abilities == null)
         {
-            Debug.LogError("AbilityDatabase: Failed to parse ability JSON. Check the root object and field names.");
-            return;
+            Debug.LogError($"AbilityDatabase: Failed to parse ability JSON from {sourceLabel}. Check the root object and field names.");
+            return false;
         }
 
-        abilities = new List<AbilityData>(wrapper.abilities);
+        bool addedAny = false;
 
-        foreach (var ability in abilities)
+        foreach (var ability in wrapper.abilities)
         {
-            if (ability == null)
+            if (!TryRegisterAbility(ability, sourceLabel))
                 continue;
 
-            if (string.IsNullOrEmpty(ability.id))
-            {
-                Debug.LogWarning("AbilityDatabase: Found ability with empty id, skipping.");
-                continue;
-            }
-
-            if (_abilitiesById.ContainsKey(ability.id))
-            {
-                Debug.LogWarning($"AbilityDatabase: Duplicate ability id '{ability.id}', skipping.");
-                continue;
-            }
-
-            _abilitiesById.Add(ability.id, ability);
+            abilities.Add(ability);
+            addedAny = true;
         }
 
-        Debug.Log($"AbilityDatabase: Loaded {_abilitiesById.Count} abilities.");
+        return addedAny;
+    }
+
+    private bool TryRegisterAbility(AbilityData ability, string sourceLabel)
+    {
+        if (ability == null)
+            return false;
+
+        if (string.IsNullOrEmpty(ability.id))
+        {
+            Debug.LogWarning($"AbilityDatabase: Found ability with empty id in {sourceLabel}, skipping.");
+            return false;
+        }
+
+        if (_abilitiesById.ContainsKey(ability.id))
+        {
+            Debug.LogWarning($"AbilityDatabase: Duplicate ability id '{ability.id}' encountered in {sourceLabel}, skipping.");
+            return false;
+        }
+
+        _abilitiesById.Add(ability.id, ability);
+        return true;
     }
 
     public AbilityData GetAbilityById(string id)
