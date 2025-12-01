@@ -382,12 +382,12 @@ public class ProjectileDamage : MonoBehaviour
 
         List<Collider2D> spawnedThisEvent = new List<Collider2D>();
 
+        // Prioritize splitting until splits are exhausted, then allow chaining
         if (splitRemaining > 0)
         {
             HandleSplit(hitPosition, hitCollider, spawnedThisEvent);
         }
-
-        if (chainRemaining > 0)
+        else if (chainRemaining > 0)
         {
             HandleChain(hitPosition, hitCollider);
         }
