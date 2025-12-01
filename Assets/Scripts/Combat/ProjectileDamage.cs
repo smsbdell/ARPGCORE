@@ -18,6 +18,10 @@ public class ProjectileDamage : MonoBehaviour
 
     public DamageType damageType = DamageType.Physical;
 
+    [Header("Movement")]
+    [Tooltip("Speed the projectile should travel at if driven by code instead of physics.")]
+    public float projectileSpeed = 10f;
+
     [Header("Source & Ownership")]
     [Tooltip("Ability id that spawned this projectile.")]
     public string sourceAbilityId;
