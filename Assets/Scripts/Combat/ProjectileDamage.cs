@@ -296,11 +296,11 @@ public class ProjectileDamage : MonoBehaviour
         if (iceShardProjectilePrefab == null)
             return;
 
-        // Spawn a small cone of shards traveling opposite to the incoming arrow direction.
+        // Spawn a small cone of shards traveling away from the caster (same direction as the incoming arrow).
         Vector2 baseDir = direction;
         if (baseDir.sqrMagnitude < 0.0001f)
             baseDir = Vector2.right;
-        baseDir = (-baseDir).normalized;
+        baseDir = baseDir.normalized;
 
         int shardCount = 5;
         float shardSpread = 45f;
@@ -310,7 +310,8 @@ public class ProjectileDamage : MonoBehaviour
             float angle = shardSpread * (t - 0.5f);
             Vector2 shardDir = Quaternion.Euler(0f, 0f, angle) * baseDir;
 
-            GameObject shard = Instantiate(iceShardProjectilePrefab, hitCollider.transform.position, Quaternion.identity);
+            Vector3 spawnPos = hitCollider.transform.position + (Vector3)(shardDir * 0.2f);
+            GameObject shard = Instantiate(iceShardProjectilePrefab, spawnPos, Quaternion.identity);
             ProjectileDamage shardDamage = shard.GetComponent<ProjectileDamage>();
             if (shardDamage != null)
             {
@@ -320,6 +321,16 @@ public class ProjectileDamage : MonoBehaviour
                 shardDamage.direction = shardDir;
                 shardDamage.projectileSpeed = projectileSpeed * 0.75f;
                 shardDamage.ownerCollider = ownerCollider;
+            }
+
+            Collider2D shardCollider = shard.GetComponent<Collider2D>();
+            if (shardCollider != null && hitCollider != null)
+            {
+                Physics2D.IgnoreCollision(shardCollider, hitCollider);
+            }
+            if (shardCollider != null && ownerCollider != null)
+            {
+                Physics2D.IgnoreCollision(shardCollider, ownerCollider);
             }
 
             Rigidbody2D rb = shard.GetComponent<Rigidbody2D>();
