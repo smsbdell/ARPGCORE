@@ -1,0 +1,77 @@
+{
+  "passives": [
+    {
+      "id": "max_health_up",
+      "displayName": "Vitality",
+      "description": "+20 Max Health",
+      "tags": ["defensive", "health"],
+      "iconSpriteName": "vitality_icon"
+    },
+    {
+      "id": "move_speed_up",
+      "displayName": "Haste",
+      "description": "+0.5 Move Speed",
+      "tags": ["utility", "speed"],
+      "iconSpriteName": "haste_icon"
+    },
+    {
+      "id": "proj_count_up",
+      "displayName": "Multi-Shot",
+      "description": "+1 Projectile and wider spread",
+      "tags": ["offense", "projectile"],
+      "iconSpriteName": "multishot_icon"
+    },
+    {
+      "id": "xp_gain_up",
+      "displayName": "Scholar",
+      "description": "+20% Experience Gain",
+      "tags": ["utility", "xp"],
+      "iconSpriteName": "scholar_icon"
+    },
+    {
+      "id": "cdr_up",
+      "displayName": "Arcane Focus",
+      "description": "+5% Cooldown Reduction",
+      "tags": ["offense", "cooldown"],
+      "iconSpriteName": "cdr_icon"
+    },
+    {
+      "id": "chain_up",
+      "displayName": "Chain Mastery",
+      "description": "+1 Chain",
+      "tags": ["offense", "chain"],
+      "iconSpriteName": "chain_icon"
+    },
+    {
+      "id": "split_up",
+      "displayName": "Split Mastery",
+      "description": "+1 Split",
+      "tags": ["offense", "split"],
+      "iconSpriteName": "split_icon"
+    },
+    {
+      "id": "armor_up",
+      "displayName": "Fortified",
+      "description": "+10 Armor",
+      "tags": ["defensive", "armor"],
+      "iconSpriteName": "armor_icon"
+    },
+    {
+      "id": "dodge_up",
+      "displayName": "Evasion",
+      "description": "+3% Dodge Chance",
+      "tags": ["defensive", "dodge"],
+      "iconSpriteName": "dodge_icon"
+    }
+        ,
+    {
+      "id": "fireball_chain",
+      "displayName": "Fireball Chain",
+      "description": "+1 chain, but only for Fireball.",
+      "tags": ["offense", "fire", "fireball"],
+      "iconSpriteName": "fireball_chain_icon",
+      "targetAbilityId": "fireball"
+    }
+
+  ]
+}

@@ -1,0 +1,546 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\smsbd\\ARPGCore\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{8963C3C1-DBD1-64D6-9F76-0EDA7BE1CB10}|Assembly-CSharp.csproj|C:\\Users\\smsbd\\ARPGCore\\assets\\scripts\\combat\\autoattackcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8963C3C1-DBD1-64D6-9F76-0EDA7BE1CB10}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\combat\\autoattackcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8963C3C1-DBD1-64D6-9F76-0EDA7BE1CB10}|Assembly-CSharp.csproj|c:\\users\\smsbd\\arpgcore\\assets\\scripts\\player\\characterstats.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8963C3C1-DBD1-64D6-9F76-0EDA7BE1CB10}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\player\\characterstats.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8963C3C1-DBD1-64D6-9F76-0EDA7BE1CB10}|Assembly-CSharp.csproj|C:\\Users\\smsbd\\ARPGCore\\assets\\scripts\\combat\\abilitydatabase.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8963C3C1-DBD1-64D6-9F76-0EDA7BE1CB10}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\combat\\abilitydatabase.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8963C3C1-DBD1-64D6-9F76-0EDA7BE1CB10}|Assembly-CSharp.csproj|C:\\Users\\smsbd\\ARPGCore\\assets\\scripts\\combat\\damagetype.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8963C3C1-DBD1-64D6-9F76-0EDA7BE1CB10}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\combat\\damagetype.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8963C3C1-DBD1-64D6-9F76-0EDA7BE1CB10}|Assembly-CSharp.csproj|C:\\Users\\smsbd\\ARPGCore\\assets\\scripts\\ui\\skillselectionmanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8963C3C1-DBD1-64D6-9F76-0EDA7BE1CB10}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\ui\\skillselectionmanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8963C3C1-DBD1-64D6-9F76-0EDA7BE1CB10}|Assembly-CSharp.csproj|C:\\Users\\smsbd\\ARPGCore\\assets\\scripts\\player\\playerskills.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8963C3C1-DBD1-64D6-9F76-0EDA7BE1CB10}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\player\\playerskills.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8963C3C1-DBD1-64D6-9F76-0EDA7BE1CB10}|Assembly-CSharp.csproj|C:\\Users\\smsbd\\ARPGCore\\assets\\scripts\\combat\\passivedatabase.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8963C3C1-DBD1-64D6-9F76-0EDA7BE1CB10}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\combat\\passivedatabase.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\smsbd\\ARPGCore\\Assets\\StreamingAssets\\NewScriptableObjectScript.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Assets\\StreamingAssets\\NewScriptableObjectScript.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8963C3C1-DBD1-64D6-9F76-0EDA7BE1CB10}|Assembly-CSharp.csproj|C:\\Users\\smsbd\\ARPGCore\\assets\\scripts\\ui\\equipmentui.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8963C3C1-DBD1-64D6-9F76-0EDA7BE1CB10}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\ui\\equipmentui.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8963C3C1-DBD1-64D6-9F76-0EDA7BE1CB10}|Assembly-CSharp.csproj|C:\\Users\\smsbd\\ARPGCore\\assets\\scripts\\player\\playerequipment.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8963C3C1-DBD1-64D6-9F76-0EDA7BE1CB10}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\player\\playerequipment.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8963C3C1-DBD1-64D6-9F76-0EDA7BE1CB10}|Assembly-CSharp.csproj|C:\\Users\\smsbd\\ARPGCore\\assets\\scripts\\ui\\equipmentuientry.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8963C3C1-DBD1-64D6-9F76-0EDA7BE1CB10}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\ui\\equipmentuientry.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\smsbd\\ARPGCore\\Assets\\Scripts\\Player\\{;ayerEquipment.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Assets\\Scripts\\Player\\{;ayerEquipment.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8963C3C1-DBD1-64D6-9F76-0EDA7BE1CB10}|Assembly-CSharp.csproj|C:\\Users\\smsbd\\ARPGCore\\assets\\scripts\\items\\equipmentslot.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8963C3C1-DBD1-64D6-9F76-0EDA7BE1CB10}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\items\\equipmentslot.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8963C3C1-DBD1-64D6-9F76-0EDA7BE1CB10}|Assembly-CSharp.csproj|C:\\Users\\smsbd\\ARPGCore\\assets\\scripts\\ui\\worldhealthbar.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8963C3C1-DBD1-64D6-9F76-0EDA7BE1CB10}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\ui\\worldhealthbar.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8963C3C1-DBD1-64D6-9F76-0EDA7BE1CB10}|Assembly-CSharp.csproj|C:\\Users\\smsbd\\ARPGCore\\assets\\scripts\\ui\\damagepopupmanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8963C3C1-DBD1-64D6-9F76-0EDA7BE1CB10}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\ui\\damagepopupmanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8963C3C1-DBD1-64D6-9F76-0EDA7BE1CB10}|Assembly-CSharp.csproj|C:\\Users\\smsbd\\ARPGCore\\assets\\scripts\\combat\\projectiledamage.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8963C3C1-DBD1-64D6-9F76-0EDA7BE1CB10}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\combat\\projectiledamage.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8963C3C1-DBD1-64D6-9F76-0EDA7BE1CB10}|Assembly-CSharp.csproj|C:\\Users\\smsbd\\ARPGCore\\assets\\scripts\\ui\\playerhud.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8963C3C1-DBD1-64D6-9F76-0EDA7BE1CB10}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\ui\\playerhud.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\smsbd\\ARPGCore\\Assets\\Scripts\\UI\\NewMonoBehaviourScript.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Assets\\Scripts\\UI\\NewMonoBehaviourScript.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8963C3C1-DBD1-64D6-9F76-0EDA7BE1CB10}|Assembly-CSharp.csproj|C:\\Users\\smsbd\\ARPGCore\\assets\\scripts\\ui\\damagepopup.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8963C3C1-DBD1-64D6-9F76-0EDA7BE1CB10}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\ui\\damagepopup.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8963C3C1-DBD1-64D6-9F76-0EDA7BE1CB10}|Assembly-CSharp.csproj|C:\\Users\\smsbd\\ARPGCore\\assets\\scripts\\items\\equipmentitem.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8963C3C1-DBD1-64D6-9F76-0EDA7BE1CB10}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\items\\equipmentitem.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8963C3C1-DBD1-64D6-9F76-0EDA7BE1CB10}|Assembly-CSharp.csproj|C:\\Users\\smsbd\\ARPGCore\\assets\\scripts\\items\\statmodifier.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8963C3C1-DBD1-64D6-9F76-0EDA7BE1CB10}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\items\\statmodifier.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8963C3C1-DBD1-64D6-9F76-0EDA7BE1CB10}|Assembly-CSharp.csproj|C:\\Users\\smsbd\\ARPGCore\\assets\\scripts\\combat\\monsterspawner.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8963C3C1-DBD1-64D6-9F76-0EDA7BE1CB10}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\combat\\monsterspawner.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8963C3C1-DBD1-64D6-9F76-0EDA7BE1CB10}|Assembly-CSharp.csproj|C:\\Users\\smsbd\\ARPGCore\\assets\\scripts\\player\\playerprogression.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8963C3C1-DBD1-64D6-9F76-0EDA7BE1CB10}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\player\\playerprogression.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\smsbd\\ARPGCore\\Assets\\StreamingAssets\\passives.json.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Assets\\StreamingAssets\\passives.json.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8963C3C1-DBD1-64D6-9F76-0EDA7BE1CB10}|Assembly-CSharp.csproj|C:\\Users\\smsbd\\ARPGCore\\assets\\scripts\\combat\\passivelistwrapper.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8963C3C1-DBD1-64D6-9F76-0EDA7BE1CB10}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\combat\\passivelistwrapper.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8963C3C1-DBD1-64D6-9F76-0EDA7BE1CB10}|Assembly-CSharp.csproj|C:\\Users\\smsbd\\ARPGCore\\assets\\scripts\\combat\\passivedefinition.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8963C3C1-DBD1-64D6-9F76-0EDA7BE1CB10}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\combat\\passivedefinition.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8963C3C1-DBD1-64D6-9F76-0EDA7BE1CB10}|Assembly-CSharp.csproj|C:\\Users\\smsbd\\ARPGCore\\assets\\scripts\\combat\\ability.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8963C3C1-DBD1-64D6-9F76-0EDA7BE1CB10}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\combat\\ability.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8963C3C1-DBD1-64D6-9F76-0EDA7BE1CB10}|Assembly-CSharp.csproj|C:\\Users\\smsbd\\ARPGCore\\assets\\scripts\\combat\\monstercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8963C3C1-DBD1-64D6-9F76-0EDA7BE1CB10}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\combat\\monstercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8963C3C1-DBD1-64D6-9F76-0EDA7BE1CB10}|Assembly-CSharp.csproj|C:\\Users\\smsbd\\ARPGCore\\assets\\scripts\\player\\playercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8963C3C1-DBD1-64D6-9F76-0EDA7BE1CB10}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\player\\playercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8963C3C1-DBD1-64D6-9F76-0EDA7BE1CB10}|Assembly-CSharp.csproj|C:\\Users\\smsbd\\ARPGCore\\assets\\scripts\\inventory\\inventoryitem.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8963C3C1-DBD1-64D6-9F76-0EDA7BE1CB10}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\inventory\\inventoryitem.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8963C3C1-DBD1-64D6-9F76-0EDA7BE1CB10}|Assembly-CSharp.csproj|C:\\Users\\smsbd\\ARPGCore\\assets\\scripts\\inventory\\inventory.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8963C3C1-DBD1-64D6-9F76-0EDA7BE1CB10}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\inventory\\inventory.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\smsbd\\ARPGCore\\Assets\\Scripts\\Inventory\\InventoryUI.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Assets\\Scripts\\Inventory\\InventoryUI.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\smsbd\\ARPGCore\\Assets\\Scripts\\Stats\\CharacterStats.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Assets\\Scripts\\Stats\\CharacterStats.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 18,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 23,
+              "Title": "passives.json.cs",
+              "DocumentMoniker": "C:\\Users\\smsbd\\ARPGCore\\Assets\\StreamingAssets\\passives.json.cs",
+              "RelativeDocumentMoniker": "Assets\\StreamingAssets\\passives.json.cs",
+              "ToolTip": "C:\\Users\\smsbd\\ARPGCore\\Assets\\StreamingAssets\\passives.json.cs",
+              "RelativeToolTip": "Assets\\StreamingAssets\\passives.json.cs",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-25T23:55:19.33Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 24,
+              "Title": "PassiveListWrapper.cs",
+              "DocumentMoniker": "C:\\Users\\smsbd\\ARPGCore\\Assets\\Scripts\\Combat\\PassiveListWrapper.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\PassiveListWrapper.cs",
+              "ToolTip": "C:\\Users\\smsbd\\ARPGCore\\Assets\\Scripts\\Combat\\PassiveListWrapper.cs",
+              "RelativeToolTip": "Assets\\Scripts\\Combat\\PassiveListWrapper.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-25T23:54:18.507Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "SkillSelectionManager.cs",
+              "DocumentMoniker": "C:\\Users\\smsbd\\ARPGCore\\Assets\\Scripts\\UI\\SkillSelectionManager.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\UI\\SkillSelectionManager.cs",
+              "ToolTip": "C:\\Users\\smsbd\\ARPGCore\\Assets\\Scripts\\UI\\SkillSelectionManager.cs",
+              "RelativeToolTip": "Assets\\Scripts\\UI\\SkillSelectionManager.cs",
+              "ViewState": "AgIAACwCAAAAAAAAAAAYwHMCAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-25T20:43:59.68Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "PlayerSkills.cs",
+              "DocumentMoniker": "C:\\Users\\smsbd\\ARPGCore\\Assets\\Scripts\\Player\\PlayerSkills.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\Player\\PlayerSkills.cs",
+              "ToolTip": "C:\\Users\\smsbd\\ARPGCore\\Assets\\Scripts\\Player\\PlayerSkills.cs",
+              "RelativeToolTip": "Assets\\Scripts\\Player\\PlayerSkills.cs",
+              "ViewState": "AgIAAI4AAAAAAAAAAAAYwLwAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-25T20:43:10.465Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "PassiveDatabase.cs",
+              "DocumentMoniker": "C:\\Users\\smsbd\\ARPGCore\\Assets\\Scripts\\Combat\\PassiveDatabase.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\PassiveDatabase.cs",
+              "ToolTip": "C:\\Users\\smsbd\\ARPGCore\\Assets\\Scripts\\Combat\\PassiveDatabase.cs",
+              "RelativeToolTip": "Assets\\Scripts\\Combat\\PassiveDatabase.cs",
+              "ViewState": "AgIAACMAAAAAAAAAAAAYwFEAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-25T20:42:43.347Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 25,
+              "Title": "PassiveDefinition.cs",
+              "DocumentMoniker": "C:\\Users\\smsbd\\ARPGCore\\Assets\\Scripts\\Combat\\PassiveDefinition.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\PassiveDefinition.cs",
+              "ToolTip": "C:\\Users\\smsbd\\ARPGCore\\Assets\\Scripts\\Combat\\PassiveDefinition.cs",
+              "RelativeToolTip": "Assets\\Scripts\\Combat\\PassiveDefinition.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-25T20:42:12.614Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "WorldHealthBar.cs",
+              "DocumentMoniker": "C:\\Users\\smsbd\\ARPGCore\\Assets\\Scripts\\UI\\WorldHealthBar.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\UI\\WorldHealthBar.cs",
+              "ToolTip": "C:\\Users\\smsbd\\ARPGCore\\Assets\\Scripts\\UI\\WorldHealthBar.cs",
+              "RelativeToolTip": "Assets\\Scripts\\UI\\WorldHealthBar.cs",
+              "ViewState": "AgIAAAIAAAAAAAAAAAAYwDAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-25T20:40:02.595Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 16,
+              "Title": "PlayerHUD.cs",
+              "DocumentMoniker": "C:\\Users\\smsbd\\ARPGCore\\Assets\\Scripts\\UI\\PlayerHUD.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\UI\\PlayerHUD.cs",
+              "ToolTip": "C:\\Users\\smsbd\\ARPGCore\\Assets\\Scripts\\UI\\PlayerHUD.cs",
+              "RelativeToolTip": "Assets\\Scripts\\UI\\PlayerHUD.cs",
+              "ViewState": "AgIAAAYAAAAAAAAAAAAYwDQAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-25T20:39:35.011Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 22,
+              "Title": "PlayerProgression.cs",
+              "DocumentMoniker": "C:\\Users\\smsbd\\ARPGCore\\Assets\\Scripts\\Player\\PlayerProgression.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\Player\\PlayerProgression.cs",
+              "ToolTip": "C:\\Users\\smsbd\\ARPGCore\\Assets\\Scripts\\Player\\PlayerProgression.cs",
+              "RelativeToolTip": "Assets\\Scripts\\Player\\PlayerProgression.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAADsAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-25T20:38:51.636Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 15,
+              "Title": "ProjectileDamage.cs",
+              "DocumentMoniker": "C:\\Users\\smsbd\\ARPGCore\\Assets\\Scripts\\Combat\\ProjectileDamage.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\ProjectileDamage.cs",
+              "ToolTip": "C:\\Users\\smsbd\\ARPGCore\\Assets\\Scripts\\Combat\\ProjectileDamage.cs",
+              "RelativeToolTip": "Assets\\Scripts\\Combat\\ProjectileDamage.cs",
+              "ViewState": "AgIAABcAAAAAAAAAAAAcwDgAAAAFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-25T06:21:02.412Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 21,
+              "Title": "MonsterSpawner.cs",
+              "DocumentMoniker": "C:\\Users\\smsbd\\ARPGCore\\Assets\\Scripts\\Combat\\MonsterSpawner.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\MonsterSpawner.cs",
+              "ToolTip": "C:\\Users\\smsbd\\ARPGCore\\Assets\\Scripts\\Combat\\MonsterSpawner.cs",
+              "RelativeToolTip": "Assets\\Scripts\\Combat\\MonsterSpawner.cs",
+              "ViewState": "AgIAAAUAAAAAAAAAAAAQwCEAAAA+AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-25T06:20:13.743Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 27,
+              "Title": "MonsterController.cs",
+              "DocumentMoniker": "C:\\Users\\smsbd\\ARPGCore\\Assets\\Scripts\\Combat\\MonsterController.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\MonsterController.cs",
+              "ToolTip": "C:\\Users\\smsbd\\ARPGCore\\Assets\\Scripts\\Combat\\MonsterController.cs",
+              "RelativeToolTip": "Assets\\Scripts\\Combat\\MonsterController.cs",
+              "ViewState": "AgIAADIAAAAAAAAAAAAzwE0AAAAZAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-25T06:19:16.894Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "CharacterStats.cs",
+              "DocumentMoniker": "C:\\Users\\smsbd\\ARPGCore\\Assets\\Scripts\\Player\\CharacterStats.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\Player\\CharacterStats.cs",
+              "ToolTip": "C:\\Users\\smsbd\\ARPGCore\\Assets\\Scripts\\Player\\CharacterStats.cs",
+              "RelativeToolTip": "Assets\\Scripts\\Player\\CharacterStats.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-25T06:18:18.939Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 26,
+              "Title": "Ability.cs",
+              "DocumentMoniker": "C:\\Users\\smsbd\\ARPGCore\\Assets\\Scripts\\Combat\\Ability.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Ability.cs",
+              "ToolTip": "C:\\Users\\smsbd\\ARPGCore\\Assets\\Scripts\\Combat\\Ability.cs",
+              "RelativeToolTip": "Assets\\Scripts\\Combat\\Ability.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABcAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-25T06:09:51.103Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "AbilityDatabase.cs",
+              "DocumentMoniker": "C:\\Users\\smsbd\\ARPGCore\\Assets\\Scripts\\Combat\\AbilityDatabase.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\AbilityDatabase.cs",
+              "ToolTip": "C:\\Users\\smsbd\\ARPGCore\\Assets\\Scripts\\Combat\\AbilityDatabase.cs",
+              "RelativeToolTip": "Assets\\Scripts\\Combat\\AbilityDatabase.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAeAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-25T06:04:01.586Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "NewScriptableObjectScript.cs",
+              "DocumentMoniker": "C:\\Users\\smsbd\\ARPGCore\\Assets\\StreamingAssets\\NewScriptableObjectScript.cs",
+              "RelativeDocumentMoniker": "Assets\\StreamingAssets\\NewScriptableObjectScript.cs",
+              "ToolTip": "C:\\Users\\smsbd\\ARPGCore\\Assets\\StreamingAssets\\NewScriptableObjectScript.cs",
+              "RelativeToolTip": "Assets\\StreamingAssets\\NewScriptableObjectScript.cs",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-27T07:02:22.535Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 17,
+              "Title": "NewMonoBehaviourScript.cs",
+              "DocumentMoniker": "C:\\Users\\smsbd\\ARPGCore\\Assets\\Scripts\\UI\\NewMonoBehaviourScript.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\UI\\NewMonoBehaviourScript.cs",
+              "ToolTip": "C:\\Users\\smsbd\\ARPGCore\\Assets\\Scripts\\UI\\NewMonoBehaviourScript.cs",
+              "RelativeToolTip": "Assets\\Scripts\\UI\\NewMonoBehaviourScript.cs",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-26T08:49:13.026Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 14,
+              "Title": "DamagePopupManager.cs",
+              "DocumentMoniker": "C:\\Users\\smsbd\\ARPGCore\\Assets\\Scripts\\UI\\DamagePopupManager.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\UI\\DamagePopupManager.cs",
+              "ToolTip": "C:\\Users\\smsbd\\ARPGCore\\Assets\\Scripts\\UI\\DamagePopupManager.cs",
+              "RelativeToolTip": "Assets\\Scripts\\UI\\DamagePopupManager.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAACYAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-26T09:48:06.619Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "AutoAttackController.cs",
+              "DocumentMoniker": "C:\\Users\\smsbd\\ARPGCore\\Assets\\Scripts\\Combat\\AutoAttackController.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\AutoAttackController.cs",
+              "ToolTip": "C:\\Users\\smsbd\\ARPGCore\\Assets\\Scripts\\Combat\\AutoAttackController.cs",
+              "RelativeToolTip": "Assets\\Scripts\\Combat\\AutoAttackController.cs",
+              "ViewState": "AgIAAKgAAAAAAAAAAADwv60AAAA3AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-25T05:23:37.932Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "EquipmentSlot.cs",
+              "DocumentMoniker": "C:\\Users\\smsbd\\ARPGCore\\Assets\\Scripts\\Items\\EquipmentSlot.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\Items\\EquipmentSlot.cs",
+              "ToolTip": "C:\\Users\\smsbd\\ARPGCore\\Assets\\Scripts\\Items\\EquipmentSlot.cs",
+              "RelativeToolTip": "Assets\\Scripts\\Items\\EquipmentSlot.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAqwBUAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-26T08:46:02.658Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 20,
+              "Title": "StatModifier.cs",
+              "DocumentMoniker": "C:\\Users\\smsbd\\ARPGCore\\Assets\\Scripts\\Items\\StatModifier.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\Items\\StatModifier.cs",
+              "ToolTip": "C:\\Users\\smsbd\\ARPGCore\\Assets\\Scripts\\Items\\StatModifier.cs",
+              "RelativeToolTip": "Assets\\Scripts\\Items\\StatModifier.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAB0AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-26T08:46:45.496Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 19,
+              "Title": "EquipmentItem.cs",
+              "DocumentMoniker": "C:\\Users\\smsbd\\ARPGCore\\Assets\\Scripts\\Items\\EquipmentItem.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\Items\\EquipmentItem.cs",
+              "ToolTip": "C:\\Users\\smsbd\\ARPGCore\\Assets\\Scripts\\Items\\EquipmentItem.cs",
+              "RelativeToolTip": "Assets\\Scripts\\Items\\EquipmentItem.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABIAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-26T08:47:48.095Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "{;ayerEquipment.cs",
+              "DocumentMoniker": "C:\\Users\\smsbd\\ARPGCore\\Assets\\Scripts\\Player\\{;ayerEquipment.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\Player\\{;ayerEquipment.cs",
+              "ToolTip": "C:\\Users\\smsbd\\ARPGCore\\Assets\\Scripts\\Player\\{;ayerEquipment.cs",
+              "RelativeToolTip": "Assets\\Scripts\\Player\\{;ayerEquipment.cs",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-26T08:48:19.012Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 18,
+              "Title": "DamagePopup.cs",
+              "DocumentMoniker": "C:\\Users\\smsbd\\ARPGCore\\Assets\\Scripts\\UI\\DamagePopup.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\UI\\DamagePopup.cs",
+              "ToolTip": "C:\\Users\\smsbd\\ARPGCore\\Assets\\Scripts\\UI\\DamagePopup.cs",
+              "RelativeToolTip": "Assets\\Scripts\\UI\\DamagePopup.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAADcAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-26T08:48:53.768Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "DamageType.cs",
+              "DocumentMoniker": "C:\\Users\\smsbd\\ARPGCore\\Assets\\Scripts\\Combat\\DamageType.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\DamageType.cs",
+              "ToolTip": "C:\\Users\\smsbd\\ARPGCore\\Assets\\Scripts\\Combat\\DamageType.cs",
+              "RelativeToolTip": "Assets\\Scripts\\Combat\\DamageType.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAA6wAcAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-29T05:47:11.016Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 32,
+              "Title": "CharacterStats.cs",
+              "DocumentMoniker": "C:\\Users\\smsbd\\ARPGCore\\Assets\\Scripts\\Stats\\CharacterStats.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\Stats\\CharacterStats.cs",
+              "ToolTip": "C:\\Users\\smsbd\\ARPGCore\\Assets\\Scripts\\Stats\\CharacterStats.cs",
+              "RelativeToolTip": "Assets\\Scripts\\Stats\\CharacterStats.cs",
+              "ViewState": "AgIAABAAAAAAAAAAAAAYwBAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-01T05:51:25.417Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "EquipmentUI.cs",
+              "DocumentMoniker": "C:\\Users\\smsbd\\ARPGCore\\Assets\\Scripts\\UI\\EquipmentUI.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\UI\\EquipmentUI.cs",
+              "ToolTip": "C:\\Users\\smsbd\\ARPGCore\\Assets\\Scripts\\UI\\EquipmentUI.cs",
+              "RelativeToolTip": "Assets\\Scripts\\UI\\EquipmentUI.cs",
+              "ViewState": "AgIAAJ4AAAAAAAAAAAAYwMwAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-26T18:55:06.285Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "EquipmentUIEntry.cs",
+              "DocumentMoniker": "C:\\Users\\smsbd\\ARPGCore\\Assets\\Scripts\\UI\\EquipmentUIEntry.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\UI\\EquipmentUIEntry.cs",
+              "ToolTip": "C:\\Users\\smsbd\\ARPGCore\\Assets\\Scripts\\UI\\EquipmentUIEntry.cs",
+              "RelativeToolTip": "Assets\\Scripts\\UI\\EquipmentUIEntry.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAACwAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-26T18:55:36.155Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "PlayerEquipment.cs",
+              "DocumentMoniker": "C:\\Users\\smsbd\\ARPGCore\\Assets\\Scripts\\Player\\PlayerEquipment.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\Player\\PlayerEquipment.cs",
+              "ToolTip": "C:\\Users\\smsbd\\ARPGCore\\Assets\\Scripts\\Player\\PlayerEquipment.cs",
+              "RelativeToolTip": "Assets\\Scripts\\Player\\PlayerEquipment.cs",
+              "ViewState": "AgIAAKUAAAAAAAAAAAAYwNMAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-27T06:43:17.017Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 31,
+              "Title": "InventoryUI.cs",
+              "DocumentMoniker": "C:\\Users\\smsbd\\ARPGCore\\Assets\\Scripts\\Inventory\\InventoryUI.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\Inventory\\InventoryUI.cs",
+              "ToolTip": "C:\\Users\\smsbd\\ARPGCore\\Assets\\Scripts\\Inventory\\InventoryUI.cs",
+              "RelativeToolTip": "Assets\\Scripts\\Inventory\\InventoryUI.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABgAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-25T05:30:53.466Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 29,
+              "Title": "InventoryItem.cs",
+              "DocumentMoniker": "C:\\Users\\smsbd\\ARPGCore\\Assets\\Scripts\\Inventory\\InventoryItem.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\Inventory\\InventoryItem.cs",
+              "ToolTip": "C:\\Users\\smsbd\\ARPGCore\\Assets\\Scripts\\Inventory\\InventoryItem.cs",
+              "RelativeToolTip": "Assets\\Scripts\\Inventory\\InventoryItem.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-25T05:30:48.05Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 30,
+              "Title": "Inventory.cs",
+              "DocumentMoniker": "C:\\Users\\smsbd\\ARPGCore\\Assets\\Scripts\\Inventory\\Inventory.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\Inventory\\Inventory.cs",
+              "ToolTip": "C:\\Users\\smsbd\\ARPGCore\\Assets\\Scripts\\Inventory\\Inventory.cs",
+              "RelativeToolTip": "Assets\\Scripts\\Inventory\\Inventory.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-25T05:30:43.935Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 28,
+              "Title": "PlayerController.cs",
+              "DocumentMoniker": "C:\\Users\\smsbd\\ARPGCore\\Assets\\Scripts\\Player\\PlayerController.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\Player\\PlayerController.cs",
+              "ToolTip": "C:\\Users\\smsbd\\ARPGCore\\Assets\\Scripts\\Player\\PlayerController.cs",
+              "RelativeToolTip": "Assets\\Scripts\\Player\\PlayerController.cs",
+              "ViewState": "AgIAAAgAAAAAAAAAAAAYwDYAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-25T05:22:57.962Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

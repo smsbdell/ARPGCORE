@@ -1,0 +1,81 @@
+{
+  "abilities": [
+    {
+      "id": "bow_shot",
+      "displayName": "Bow Shot",
+      "description": "Fire an arrow at your cursor.",
+      "tags": [
+        "bow",
+        "projectile",
+        "physical",
+        "multi_projectile"
+      ],
+      "iconSpriteName": "bow_shot_icon",
+      "damageType": "Physical",
+      "cooldown": 0.6,
+      "baseDamage": 8,
+      "projectilePrefabName": "ArrowProjectile",
+      "projectileSpeed": 22.0,
+      "duration": 3.0,
+      "autoCast": true,
+      "maxLevel": 5
+    },
+    {
+      "id": "lightning_shot",
+      "displayName": "Lightning Shot",
+      "description": "Fire an arrow that calls down lightning on impact, striking up to 3 nearby enemies.",
+      "tags": [
+        "bow",
+        "projectile",
+        "lightning"
+      ],
+      "iconSpriteName": "lightning_shot_icon",
+      "damageType": "Lightning",
+      "cooldown": 1.0,
+      "baseDamage": 10,
+      "projectilePrefabName": "ArrowProjectile",
+      "projectileSpeed": 22.0,
+      "duration": 3.0,
+      "autoCast": true,
+      "maxLevel": 5
+    },
+    {
+      "id": "fire_shot",
+      "displayName": "Fire Shot",
+      "description": "Fire an arrow that explodes in a small radius around the target.",
+      "tags": [
+        "bow",
+        "projectile",
+        "fire"
+      ],
+      "iconSpriteName": "fire_shot_icon",
+      "damageType": "Fire",
+      "cooldown": 1.1,
+      "baseDamage": 12,
+      "projectilePrefabName": "ArrowProjectile",
+      "projectileSpeed": 20.0,
+      "duration": 3.0,
+      "autoCast": true,
+      "maxLevel": 5
+    },
+    {
+      "id": "ice_arrow",
+      "displayName": "Ice Arrow",
+      "description": "Fire an arrow that releases 5 icy shards behind the target on impact.",
+      "tags": [
+        "bow",
+        "projectile",
+        "ice"
+      ],
+      "iconSpriteName": "ice_arrow_icon",
+      "damageType": "Ice",
+      "cooldown": 1.2,
+      "baseDamage": 11,
+      "projectilePrefabName": "ArrowProjectile",
+      "projectileSpeed": 21.0,
+      "duration": 3.0,
+      "autoCast": true,
+      "maxLevel": 5
+    }
+  ]
+}

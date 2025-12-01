@@ -1,0 +1,18 @@
+{
+    "abilities": [
+      {
+        "id": "fireball",
+      "displayName": "Fireball",
+      "description": "Launches a fiery projectile that explodes on impact.",
+      "tags": ["spell", "fire"],
+      "iconSpriteName": "fireball_icon",
+      "cooldown": 1.2,
+      "baseDamage": 20,
+      "projectilePrefabName": "FireballProjectile",
+      "projectileSpeed": 16.0,
+      "duration": 3.0,
+      "autoCast": true,
+      "maxLevel": 5
+      }
+  ]
+}

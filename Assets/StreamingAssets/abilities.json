@@ -1,0 +1,36 @@
+{
+  "abilities": [
+    {
+      "id": "fireball",
+      "displayName": "Fireball",
+      "cooldown": 0.5,
+      "baseDamage": 20,
+      "projectilePrefabName": "FireballProjectile",
+      "projectileSpeed": 12,
+      "duration": 2.0,
+      "maxLevel": 5,
+      "iconSpriteName": "fireball_icon",
+      "tags": [
+        "fire",
+        "projectile"
+      ],
+      "autoCast": true
+    },
+    {
+      "id": "ice_nova",
+      "displayName": "Ice Nova",
+      "cooldown": 2.0,
+      "baseDamage": 30,
+      "projectilePrefabName": "",
+      "projectileSpeed": 0,
+      "duration": 0.8,
+      "maxLevel": 5,
+      "iconSpriteName": "ice_nova_icon",
+      "tags": [
+        "cold",
+        "aoe"
+      ],
+      "autoCast": false
+    }
+  ]
+}

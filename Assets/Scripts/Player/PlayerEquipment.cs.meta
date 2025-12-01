@@ -1,0 +1,27 @@
+fileFormatVersion: 2
+guid: f0e59414033850f40913f229e7b64ff4
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - helmet: {instanceID: 0}
+  - ring1: {instanceID: 0}
+  - ring2: {instanceID: 0}
+  - ring3: {instanceID: 0}
+  - ring4: {instanceID: 0}
+  - ring5: {instanceID: 0}
+  - ring6: {instanceID: 0}
+  - ring7: {instanceID: 0}
+  - ring8: {instanceID: 0}
+  - ring9: {instanceID: 0}
+  - ring10: {instanceID: 0}
+  - mainHand: {fileID: 11400000, guid: 7469d8282cfcf0c4b9d32a22e5237201, type: 2}
+  - offHand: {instanceID: 0}
+  - boots: {instanceID: 0}
+  - gloves: {instanceID: 0}
+  - pants: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
