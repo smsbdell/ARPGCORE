@@ -577,6 +577,47 @@ public class SkillSelectionManager : MonoBehaviour
         if (ability.tags == null || ability.tags.Length == 0)
             return false;
 
+        // Normalize tags once to avoid repeated trimming and to allow case-insensitive lookup.
+        List<string> abilityTags = new List<string>();
+        foreach (string at in ability.tags)
+        {
+            if (string.IsNullOrWhiteSpace(at))
+                continue;
+
+            abilityTags.Add(at.Trim());
+        }
+
+        if (abilityTags.Count == 0)
+            return false;
+
+        // Weapon-specific requirement tags (e.g., bow) should gate selection.
+        List<string> weaponRequirementTags = new List<string>();
+        foreach (string wt in weaponTags)
+        {
+            if (string.IsNullOrWhiteSpace(wt))
+                continue;
+
+            string weaponTag = wt.Trim();
+            if (_weaponRequirementTags.Contains(weaponTag))
+                weaponRequirementTags.Add(weaponTag);
+        }
+
+        // If we found explicit weapon requirement tags, require at least one match.
+        if (weaponRequirementTags.Count > 0)
+        {
+            foreach (string requiredTag in weaponRequirementTags)
+            {
+                foreach (string abilityTag in abilityTags)
+                {
+                    if (string.Equals(requiredTag, abilityTag, StringComparison.OrdinalIgnoreCase))
+                        return true;
+                }
+            }
+
+            return false;
+        }
+
+        // Fallback: if weapon has no explicit requirement tags, allow any overlap.
         foreach (string wt in weaponTags)
         {
             if (string.IsNullOrWhiteSpace(wt))
@@ -584,16 +625,18 @@ public class SkillSelectionManager : MonoBehaviour
 
             string weaponTag = wt.Trim();
 
-            foreach (string at in ability.tags)
+            foreach (string abilityTag in abilityTags)
             {
-                if (string.IsNullOrWhiteSpace(at))
-                    continue;
-
-                if (string.Equals(weaponTag, at.Trim(), StringComparison.OrdinalIgnoreCase))
+                if (string.Equals(weaponTag, abilityTag, StringComparison.OrdinalIgnoreCase))
                     return true;
             }
         }
 
         return false;
     }
+
+    private static readonly HashSet<string> _weaponRequirementTags = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+    {
+        "bow", "ranged", "melee", "sword", "axe", "mace", "dagger", "staff", "wand", "spear", "crossbow", "gun", "unarmed"
+    };
 }
