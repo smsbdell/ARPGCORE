@@ -237,7 +237,15 @@ public class ProjectileDamage : MonoBehaviour
         Vector2 center = hitCollider.transform.position;
         float radius = maxChainDistance;
 
-        var hits = Physics2D.OverlapCircleAll(center, radius, enemyLayerMask);
+        // If the layer mask wasn't configured in the inspector, fall back to the hit target's layer
+        // so we can still find nearby enemies on that same layer.
+        int mask = enemyLayerMask.value;
+        if (mask == 0)
+        {
+            mask = 1 << hitCollider.gameObject.layer;
+        }
+
+        var hits = Physics2D.OverlapCircleAll(center, radius, mask);
         int arcs = 3;
         int count = 0;
 
