@@ -135,13 +135,13 @@ public class AbilityDatabase : MonoBehaviour
                 continue;
 
             string path = Path.Combine(Application.streamingAssetsPath, fileName);
-            if (!File.Exists(path))
+            if (!System.IO.File.Exists(path))
             {
                 Debug.LogWarning($"AbilityDatabase: StreamingAssets file not found at {path}");
                 continue;
             }
 
-            string jsonText = File.ReadAllText(path);
+            string jsonText = System.IO.File.ReadAllText(path);
             if (string.IsNullOrWhiteSpace(jsonText))
             {
                 Debug.LogWarning($"AbilityDatabase: StreamingAssets file {fileName} is empty.");
