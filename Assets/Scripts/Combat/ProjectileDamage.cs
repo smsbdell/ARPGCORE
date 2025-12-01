@@ -18,6 +18,16 @@ public class ProjectileDamage : MonoBehaviour
 
     public DamageType damageType = DamageType.Physical;
 
+    [Header("Secondary Prefabs")]
+    [Tooltip("Optional VFX spawned at each lightning arc target when Lightning Shot hits.")]
+    public GameObject lightningStrikePrefab;
+
+    [Tooltip("Projectile prefab used for Ice Arrow shards.")]
+    public GameObject iceShardProjectilePrefab;
+
+    [Tooltip("Lifetime for spawned lightning strike VFX objects.")]
+    public float lightningStrikeLifetime = 0.15f;
+
     [Header("Movement")]
     [Tooltip("Speed the projectile should travel at if driven by code instead of physics.")]
     public float projectileSpeed = 10f;
@@ -224,8 +234,6 @@ public class ProjectileDamage : MonoBehaviour
 
     private void HandleLightningArcs(Collider2D hitCollider)
     {
-        // Example: find up to N nearby enemies around hit point and apply secondaryDamage.
-        // You can adapt this to match your existing implementation.
         Vector2 center = hitCollider.transform.position;
         float radius = maxChainDistance;
 
@@ -246,6 +254,15 @@ public class ProjectileDamage : MonoBehaviour
             if (DamagePopupManager.Instance != null)
             {
                 DamagePopupManager.Instance.SpawnPopup(secondaryDamage, h.transform.position);
+            }
+
+            if (lightningStrikePrefab != null)
+            {
+                GameObject strike = Instantiate(lightningStrikePrefab, h.transform.position, Quaternion.identity);
+                if (lightningStrikeLifetime > 0f)
+                {
+                    Destroy(strike, lightningStrikeLifetime);
+                }
             }
 
             count++;
@@ -276,9 +293,44 @@ public class ProjectileDamage : MonoBehaviour
 
     private void HandleIceShards(Collider2D hitCollider)
     {
-        // This assumes you already have shard spawning logic elsewhere.
-        // Here you'd spawn shard projectiles and set their ProjectileDamage.damage = secondaryDamage.
-        // Left as a hook to integrate with your existing shard spawning code.
+        if (iceShardProjectilePrefab == null)
+            return;
+
+        // Spawn a small cone of shards traveling opposite to the incoming arrow direction.
+        Vector2 baseDir = direction;
+        if (baseDir.sqrMagnitude < 0.0001f)
+            baseDir = Vector2.right;
+        baseDir = (-baseDir).normalized;
+
+        int shardCount = 5;
+        float shardSpread = 45f;
+        for (int i = 0; i < shardCount; i++)
+        {
+            float t = shardCount == 1 ? 0f : (float)i / (shardCount - 1);
+            float angle = shardSpread * (t - 0.5f);
+            Vector2 shardDir = Quaternion.Euler(0f, 0f, angle) * baseDir;
+
+            GameObject shard = Instantiate(iceShardProjectilePrefab, hitCollider.transform.position, Quaternion.identity);
+            ProjectileDamage shardDamage = shard.GetComponent<ProjectileDamage>();
+            if (shardDamage != null)
+            {
+                shardDamage.damage = secondaryDamage;
+                shardDamage.secondaryDamage = secondaryDamage;
+                shardDamage.damageType = DamageType.Ice;
+                shardDamage.direction = shardDir;
+                shardDamage.projectileSpeed = projectileSpeed * 0.75f;
+                shardDamage.ownerCollider = ownerCollider;
+            }
+
+            Rigidbody2D rb = shard.GetComponent<Rigidbody2D>();
+            if (rb != null)
+            {
+                rb.linearVelocity = shardDir * (projectileSpeed * 0.75f);
+            }
+
+            float rotAngle = Mathf.Atan2(shardDir.y, shardDir.x) * Mathf.Rad2Deg;
+            shard.transform.rotation = Quaternion.AngleAxis(rotAngle, Vector3.forward);
+        }
     }
 
     #endregion

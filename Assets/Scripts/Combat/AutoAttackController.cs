@@ -168,6 +168,7 @@ public class AutoAttackController : MonoBehaviour
                     if (projDamage != null)
                     {
                         projDamage.damage = damage;
+                        projDamage.secondaryDamage = damage;
                         projDamage.splitRemaining = splitCount;
                         projDamage.chainRemaining = chainCount;
                         projDamage.projectileSpeed = ability.projectileSpeed;
