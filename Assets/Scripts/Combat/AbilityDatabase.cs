@@ -44,6 +44,9 @@ public class AbilityData
     [Header("Skill Level Scaling")]
     [Tooltip("Per-skill-level multiplier for baseDamage. 0.25 = +25% per level.")]
     public float levelScalingPerLevel = 0.25f;
+
+    [Tooltip("Maximum number of times this ability can be leveled. 0 or less = unlimited.")]
+    public int maxLevel = 5;
 }
 
 [System.Serializable]
