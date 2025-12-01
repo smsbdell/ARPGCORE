@@ -485,11 +485,17 @@ public class ProjectileDamage : MonoBehaviour
         }
 
         Collider2D cloneCollider = clone.GetComponent<Collider2D>();
+        Collider2D selfCollider = GetComponent<Collider2D>();
         if (cloneCollider != null)
         {
             if (ownerCollider != null)
             {
                 Physics2D.IgnoreCollision(cloneCollider, ownerCollider);
+            }
+
+            if (selfCollider != null)
+            {
+                Physics2D.IgnoreCollision(cloneCollider, selfCollider);
             }
 
             if (ignoreCollider != null)
