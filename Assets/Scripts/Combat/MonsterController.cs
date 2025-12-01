@@ -15,6 +15,7 @@ public class MonsterController : MonoBehaviour
     private Rigidbody2D _rb;
     private CharacterStats _stats;
     private Transform _target;
+    private PlayerProgression _playerProgression;
     private float _nextDamageTime = 0f;
 
     private void Awake()
@@ -25,19 +26,14 @@ public class MonsterController : MonoBehaviour
 
     private void Start()
     {
-        GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
-        if (playerObj != null)
-        {
-            _target = playerObj.transform;
-        }
-        else
-        {
-            Debug.LogWarning("MonsterController: No GameObject with tag 'Player' found.");
-        }
+        CachePlayerReferences();
     }
 
     private void FixedUpdate()
     {
+        if (_target == null)
+            CachePlayerReferences();
+
         if (_target == null)
         {
             _rb.linearVelocity = Vector2.zero;
@@ -76,14 +72,24 @@ public class MonsterController : MonoBehaviour
 
     public void OnDeath()
     {
+        if (_playerProgression == null)
+            CachePlayerReferences();
+
+        _playerProgression?.GainXP(xpReward);
+    }
+
+    private void CachePlayerReferences()
+    {
         GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
         if (playerObj == null)
+        {
+            Debug.LogWarning("MonsterController: No GameObject with tag 'Player' found.");
             return;
+        }
 
-        PlayerProgression progression = playerObj.GetComponent<PlayerProgression>();
-        if (progression == null)
-            return;
-
-        progression.GainXP(xpReward);
+        _target = playerObj.transform;
+        _playerProgression = playerObj.GetComponent<PlayerProgression>();
+        if (_playerProgression == null)
+            Debug.LogWarning("MonsterController: PlayerProgression component not found on player.");
     }
 }
