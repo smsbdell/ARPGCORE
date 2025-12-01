@@ -21,6 +21,12 @@ public class AutoAttackController : MonoBehaviour
         _stats = GetComponent<CharacterStats>();
         _playerSkills = GetComponent<PlayerSkills>();
         _ownerCollider = GetComponent<Collider2D>();
+
+        // Some player prefabs keep the hitbox on a child; grab that if no collider exists on the root.
+        if (_ownerCollider == null)
+        {
+            _ownerCollider = GetComponentInChildren<Collider2D>();
+        }
     }
 
     private void Start()
@@ -151,6 +157,7 @@ public class AutoAttackController : MonoBehaviour
                     baseDirection = Vector2.right;
                 baseDirection = baseDirection.normalized;
 
+                List<Collider2D> volleyColliders = new List<Collider2D>();
                 for (int i = 0; i < projectileCount; i++)
                 {
                     Vector2 projDir = baseDirection;
@@ -168,6 +175,7 @@ public class AutoAttackController : MonoBehaviour
                     if (projDamage != null)
                     {
                         projDamage.damage = damage;
+                        projDamage.secondaryDamage = damage;
                         projDamage.splitRemaining = splitCount;
                         projDamage.chainRemaining = chainCount;
                         projDamage.projectileSpeed = ability.projectileSpeed;
@@ -176,6 +184,27 @@ public class AutoAttackController : MonoBehaviour
                         projDamage.damageType = ability.damageType;
                         projDamage.sourceAbilityId = ability.id;
                         projDamage.ownerCollider = _ownerCollider;
+                    }
+
+                    Collider2D projCollider = projectile.GetComponent<Collider2D>();
+                    if (projCollider != null)
+                    {
+                        if (_ownerCollider != null)
+                        {
+                            Physics2D.IgnoreCollision(projCollider, _ownerCollider);
+                        }
+
+                        // Prevent freshly spawned multishot arrows from colliding with each other on spawn.
+                        for (int j = 0; j < volleyColliders.Count; j++)
+                        {
+                            Collider2D otherCollider = volleyColliders[j];
+                            if (otherCollider != null)
+                            {
+                                Physics2D.IgnoreCollision(projCollider, otherCollider);
+                            }
+                        }
+
+                        volleyColliders.Add(projCollider);
                     }
 
                     Rigidbody2D rb = projectile.GetComponent<Rigidbody2D>();

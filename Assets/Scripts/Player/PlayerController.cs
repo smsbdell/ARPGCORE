@@ -15,6 +15,9 @@ public class PlayerController : MonoBehaviour
     {
         _rb = GetComponent<Rigidbody2D>();
         _stats = GetComponent<CharacterStats>();
+
+        // Prevent physics collisions from rotating the player when bumping into enemies or boundaries.
+        _rb.freezeRotation = true;
     }
 
     private void Update()

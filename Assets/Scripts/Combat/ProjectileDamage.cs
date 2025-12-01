@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -17,6 +18,16 @@ public class ProjectileDamage : MonoBehaviour
     public float secondaryDamage = 10f;
 
     public DamageType damageType = DamageType.Physical;
+
+    [Header("Secondary Prefabs")]
+    [Tooltip("Optional VFX spawned at each lightning arc target when Lightning Shot hits.")]
+    public GameObject lightningStrikePrefab;
+
+    [Tooltip("Projectile prefab used for Ice Arrow shards.")]
+    public GameObject iceShardProjectilePrefab;
+
+    [Tooltip("Lifetime for spawned lightning strike VFX objects.")]
+    public float lightningStrikeLifetime = 0.15f;
 
     [Header("Movement")]
     [Tooltip("Speed the projectile should travel at if driven by code instead of physics.")]
@@ -39,6 +50,9 @@ public class ProjectileDamage : MonoBehaviour
     [Tooltip("How many more times this projectile can split into additional projectiles.")]
     public int splitRemaining = 0;
 
+    [Tooltip("If false, this projectile will not perform chain or split follow-ups when it hits.")]
+    public bool allowSplitAndChain = true;
+
     [Tooltip("Maximum distance a chain can jump to another target.")]
     public float maxChainDistance = 10f;
 
@@ -51,16 +65,19 @@ public class ProjectileDamage : MonoBehaviour
     private bool _damageInitialized;
     private float _lifeTimer;
     private Rigidbody2D _rb;
+    private int _resolvedEnemyMask;
 
     private void Awake()
     {
         _rb = GetComponent<Rigidbody2D>();
+        _resolvedEnemyMask = ResolveEnemyMask();
         InitializeDamageFromAbility();
     }
 
     private void Start()
     {
         _lifeTimer = lifetime;
+        _resolvedEnemyMask = ResolveEnemyMask();
     }
 
     private void Update()
@@ -78,6 +95,15 @@ public class ProjectileDamage : MonoBehaviour
                 Destroy(gameObject);
             }
         }
+    }
+
+    private int ResolveEnemyMask()
+    {
+        if (enemyLayerMask.value != 0)
+            return enemyLayerMask.value;
+
+        int monsterLayer = LayerMask.NameToLayer("Monster");
+        return monsterLayer >= 0 ? 1 << monsterLayer : 0;
     }
 
     private void InitializeDamageFromAbility()
@@ -180,6 +206,10 @@ public class ProjectileDamage : MonoBehaviour
         if (ownerCollider != null && other == ownerCollider)
             return;
 
+        // Only process collisions against configured enemy layers
+        if (_resolvedEnemyMask != 0 && (_resolvedEnemyMask & (1 << other.gameObject.layer)) == 0)
+            return;
+
         CharacterStats targetStats = other.GetComponentInParent<CharacterStats>();
         if (targetStats != null)
         {
@@ -193,7 +223,10 @@ public class ProjectileDamage : MonoBehaviour
         }
 
         HandleSecondaryEffects(other, targetStats);
-        HandleSplitAndChain(other, targetStats);
+        if (allowSplitAndChain)
+        {
+            HandleSplitAndChain(other, targetStats);
+        }
 
         Destroy(gameObject);
     }
@@ -224,12 +257,10 @@ public class ProjectileDamage : MonoBehaviour
 
     private void HandleLightningArcs(Collider2D hitCollider)
     {
-        // Example: find up to N nearby enemies around hit point and apply secondaryDamage.
-        // You can adapt this to match your existing implementation.
         Vector2 center = hitCollider.transform.position;
         float radius = maxChainDistance;
 
-        var hits = Physics2D.OverlapCircleAll(center, radius, enemyLayerMask);
+        var hits = Physics2D.OverlapCircleAll(center, radius, _resolvedEnemyMask);
         int arcs = 3;
         int count = 0;
 
@@ -248,6 +279,15 @@ public class ProjectileDamage : MonoBehaviour
                 DamagePopupManager.Instance.SpawnPopup(secondaryDamage, h.transform.position);
             }
 
+            if (lightningStrikePrefab != null)
+            {
+                GameObject strike = Instantiate(lightningStrikePrefab, h.transform.position, Quaternion.identity);
+                if (lightningStrikeLifetime > 0f)
+                {
+                    Destroy(strike, lightningStrikeLifetime);
+                }
+            }
+
             count++;
             if (count >= arcs)
                 break;
@@ -259,7 +299,7 @@ public class ProjectileDamage : MonoBehaviour
         Vector2 center = hitCollider.transform.position;
         float radius = 1.5f; // adjust as needed
 
-        var hits = Physics2D.OverlapCircleAll(center, radius, enemyLayerMask);
+        var hits = Physics2D.OverlapCircleAll(center, radius, _resolvedEnemyMask);
         foreach (var h in hits)
         {
             CharacterStats stats = h.GetComponentInParent<CharacterStats>();
@@ -276,9 +316,60 @@ public class ProjectileDamage : MonoBehaviour
 
     private void HandleIceShards(Collider2D hitCollider)
     {
-        // This assumes you already have shard spawning logic elsewhere.
-        // Here you'd spawn shard projectiles and set their ProjectileDamage.damage = secondaryDamage.
-        // Left as a hook to integrate with your existing shard spawning code.
+        if (iceShardProjectilePrefab == null)
+            return;
+
+        // Spawn a small cone of shards traveling away from the caster (same direction as the incoming arrow).
+        Vector2 baseDir = direction;
+        if (baseDir.sqrMagnitude < 0.0001f)
+            baseDir = Vector2.right;
+        baseDir = baseDir.normalized;
+
+        int shardCount = 5;
+        float shardSpread = 45f;
+        for (int i = 0; i < shardCount; i++)
+        {
+            float t = shardCount == 1 ? 0f : (float)i / (shardCount - 1);
+            float angle = shardSpread * (t - 0.5f);
+            Vector2 shardDir = Quaternion.Euler(0f, 0f, angle) * baseDir;
+
+            Vector3 spawnPos = hitCollider.transform.position + (Vector3)(shardDir * 0.2f);
+            GameObject shard = Instantiate(iceShardProjectilePrefab, spawnPos, Quaternion.identity);
+            ProjectileDamage shardDamage = shard.GetComponent<ProjectileDamage>();
+            if (shardDamage != null)
+            {
+                shardDamage.damage = secondaryDamage;
+                shardDamage.secondaryDamage = secondaryDamage;
+                shardDamage.damageType = DamageType.Ice;
+                shardDamage.direction = shardDir;
+                shardDamage.projectileSpeed = projectileSpeed * 0.75f;
+                shardDamage.ownerCollider = ownerCollider;
+                shardDamage.chainRemaining = 0;
+                shardDamage.splitRemaining = 0;
+                shardDamage.allowSplitAndChain = false;
+                shardDamage.enemyLayerMask = enemyLayerMask;
+                shardDamage.sourceAbilityId = sourceAbilityId;
+            }
+
+            Collider2D shardCollider = shard.GetComponent<Collider2D>();
+            if (shardCollider != null && hitCollider != null)
+            {
+                Physics2D.IgnoreCollision(shardCollider, hitCollider);
+            }
+            if (shardCollider != null && ownerCollider != null)
+            {
+                Physics2D.IgnoreCollision(shardCollider, ownerCollider);
+            }
+
+            Rigidbody2D rb = shard.GetComponent<Rigidbody2D>();
+            if (rb != null)
+            {
+                rb.linearVelocity = shardDir * (projectileSpeed * 0.75f);
+            }
+
+            float rotAngle = Mathf.Atan2(shardDir.y, shardDir.x) * Mathf.Rad2Deg;
+            shard.transform.rotation = Quaternion.AngleAxis(rotAngle, Vector3.forward);
+        }
     }
 
     #endregion
@@ -287,13 +378,157 @@ public class ProjectileDamage : MonoBehaviour
 
     private void HandleSplitAndChain(Collider2D hitCollider, CharacterStats hitStats)
     {
-        // You already have fairly involved split/chain logic.
-        // This hook keeps the interface: chainRemaining / splitRemaining / maxChainDistance / enemyLayerMask.
-        // If you want, you can re-inject your existing implementation here
-        // and it will use the new damage values computed in InitializeDamageFromAbility().
+        Vector2 hitPosition = hitCollider != null ? (Vector2)hitCollider.bounds.center : (Vector2)transform.position;
+
+        List<Collider2D> spawnedThisEvent = new List<Collider2D>();
+
+        // Prioritize splitting until splits are exhausted, then allow chaining
+        if (splitRemaining > 0)
+        {
+            HandleSplit(hitPosition, hitCollider, spawnedThisEvent);
+        }
+        else if (chainRemaining > 0)
+        {
+            HandleChain(hitPosition, hitCollider);
+        }
     }
 
     #endregion
+
+    private void HandleSplit(Vector2 hitPosition, Collider2D hitCollider, List<Collider2D> spawnedThisEvent)
+    {
+        Vector2 baseDir = direction.sqrMagnitude > 0.0001f ? direction.normalized : Vector2.right;
+        float splitAngle = 25f;
+        Vector2[] dirs = new Vector2[]
+        {
+            Quaternion.Euler(0f, 0f, splitAngle * 0.5f) * baseDir,
+            Quaternion.Euler(0f, 0f, -splitAngle * 0.5f) * baseDir
+        };
+
+        foreach (var dir in dirs)
+        {
+            ProjectileDamage spawned = SpawnFollowUpProjectile(hitPosition + dir * 0.25f, dir, chainRemaining, splitRemaining - 1, hitCollider, spawnedThisEvent);
+            if (spawned == null)
+                continue;
+
+            Collider2D col = spawned.GetComponent<Collider2D>();
+            if (col != null)
+            {
+                spawnedThisEvent.Add(col);
+            }
+        }
+
+        // Prevent freshly split projectiles from consuming each other immediately
+        for (int i = 0; i < spawnedThisEvent.Count; i++)
+        {
+            for (int j = i + 1; j < spawnedThisEvent.Count; j++)
+            {
+                var a = spawnedThisEvent[i];
+                var b = spawnedThisEvent[j];
+                if (a != null && b != null)
+                {
+                    Physics2D.IgnoreCollision(a, b);
+                }
+            }
+        }
+    }
+
+    private void HandleChain(Vector2 hitPosition, Collider2D hitCollider)
+    {
+        Collider2D[] hits = Physics2D.OverlapCircleAll(hitPosition, maxChainDistance, _resolvedEnemyMask);
+        Collider2D best = null;
+        float bestDist = float.MaxValue;
+
+        foreach (var h in hits)
+        {
+            if (h == null || h == hitCollider)
+                continue;
+
+            if (ownerCollider != null && h == ownerCollider)
+                continue;
+
+            CharacterStats stats = h.GetComponentInParent<CharacterStats>();
+            if (stats == null)
+                continue;
+
+            float dist = Vector2.SqrMagnitude((Vector2)h.bounds.center - hitPosition);
+            if (dist < bestDist)
+            {
+                bestDist = dist;
+                best = h;
+            }
+        }
+
+        if (best == null)
+            return;
+
+        Vector2 dir = ((Vector2)best.bounds.center - hitPosition).normalized;
+        SpawnFollowUpProjectile(hitPosition + dir * 0.25f, dir, chainRemaining - 1, splitRemaining, hitCollider, null);
+    }
+
+    private ProjectileDamage SpawnFollowUpProjectile(Vector2 spawnPosition, Vector2 dir, int chainCount, int splitCount, Collider2D ignoreCollider, List<Collider2D> ignoreList)
+    {
+        GameObject clone = Instantiate(gameObject, spawnPosition, Quaternion.identity);
+
+        ProjectileDamage cloneDamage = clone.GetComponent<ProjectileDamage>();
+        if (cloneDamage != null)
+        {
+            cloneDamage.damage = damage;
+            cloneDamage.secondaryDamage = secondaryDamage;
+            cloneDamage.damageType = damageType;
+            cloneDamage.direction = dir;
+            cloneDamage.projectileSpeed = projectileSpeed;
+            cloneDamage.sourceAbilityId = sourceAbilityId;
+            cloneDamage.ownerCollider = ownerCollider;
+            cloneDamage.chainRemaining = Mathf.Max(0, chainCount);
+            cloneDamage.splitRemaining = Mathf.Max(0, splitCount);
+            cloneDamage.allowSplitAndChain = allowSplitAndChain;
+            cloneDamage.enemyLayerMask = enemyLayerMask;
+            cloneDamage._resolvedEnemyMask = _resolvedEnemyMask;
+        }
+
+        Collider2D cloneCollider = clone.GetComponent<Collider2D>();
+        Collider2D selfCollider = GetComponent<Collider2D>();
+        if (cloneCollider != null)
+        {
+            if (ownerCollider != null)
+            {
+                Physics2D.IgnoreCollision(cloneCollider, ownerCollider);
+            }
+
+            if (selfCollider != null)
+            {
+                Physics2D.IgnoreCollision(cloneCollider, selfCollider);
+            }
+
+            if (ignoreCollider != null)
+            {
+                Physics2D.IgnoreCollision(cloneCollider, ignoreCollider);
+            }
+
+            if (ignoreList != null)
+            {
+                for (int i = 0; i < ignoreList.Count; i++)
+                {
+                    if (ignoreList[i] != null)
+                    {
+                        Physics2D.IgnoreCollision(cloneCollider, ignoreList[i]);
+                    }
+                }
+            }
+        }
+
+        Rigidbody2D rb = clone.GetComponent<Rigidbody2D>();
+        if (rb != null)
+        {
+            rb.linearVelocity = dir.normalized * projectileSpeed;
+        }
+
+        float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+        clone.transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
+
+        return cloneDamage;
+    }
 
     private void OnDrawGizmosSelected()
     {

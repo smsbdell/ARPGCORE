@@ -29,6 +29,25 @@ public class MonsterController : MonoBehaviour
         CachePlayerReferences();
     }
 
+    private void OnEnable()
+    {
+        if (_stats == null)
+            _stats = GetComponent<CharacterStats>();
+
+        if (_stats != null)
+        {
+            _stats.OnDied += HandleDeath;
+        }
+    }
+
+    private void OnDisable()
+    {
+        if (_stats != null)
+        {
+            _stats.OnDied -= HandleDeath;
+        }
+    }
+
     private void FixedUpdate()
     {
         if (_target == null)
@@ -76,6 +95,12 @@ public class MonsterController : MonoBehaviour
             CachePlayerReferences();
 
         _playerProgression?.GainXP(xpReward);
+    }
+
+    private void HandleDeath()
+    {
+        OnDeath();
+        Destroy(gameObject);
     }
 
     private void CachePlayerReferences()
