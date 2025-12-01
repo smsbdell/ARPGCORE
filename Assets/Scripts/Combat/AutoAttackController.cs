@@ -157,6 +157,7 @@ public class AutoAttackController : MonoBehaviour
                     baseDirection = Vector2.right;
                 baseDirection = baseDirection.normalized;
 
+                List<Collider2D> volleyColliders = new List<Collider2D>();
                 for (int i = 0; i < projectileCount; i++)
                 {
                     Vector2 projDir = baseDirection;
@@ -186,9 +187,24 @@ public class AutoAttackController : MonoBehaviour
                     }
 
                     Collider2D projCollider = projectile.GetComponent<Collider2D>();
-                    if (projCollider != null && _ownerCollider != null)
+                    if (projCollider != null)
                     {
-                        Physics2D.IgnoreCollision(projCollider, _ownerCollider);
+                        if (_ownerCollider != null)
+                        {
+                            Physics2D.IgnoreCollision(projCollider, _ownerCollider);
+                        }
+
+                        // Prevent freshly spawned multishot arrows from colliding with each other on spawn.
+                        for (int j = 0; j < volleyColliders.Count; j++)
+                        {
+                            Collider2D otherCollider = volleyColliders[j];
+                            if (otherCollider != null)
+                            {
+                                Physics2D.IgnoreCollision(projCollider, otherCollider);
+                            }
+                        }
+
+                        volleyColliders.Add(projCollider);
                     }
 
                     Rigidbody2D rb = projectile.GetComponent<Rigidbody2D>();
