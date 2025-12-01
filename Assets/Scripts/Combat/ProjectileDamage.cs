@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -358,13 +359,154 @@ public class ProjectileDamage : MonoBehaviour
 
     private void HandleSplitAndChain(Collider2D hitCollider, CharacterStats hitStats)
     {
-        // You already have fairly involved split/chain logic.
-        // This hook keeps the interface: chainRemaining / splitRemaining / maxChainDistance / enemyLayerMask.
-        // If you want, you can re-inject your existing implementation here
-        // and it will use the new damage values computed in InitializeDamageFromAbility().
+        Vector2 hitPosition = hitCollider != null ? (Vector2)hitCollider.bounds.center : (Vector2)transform.position;
+
+        List<Collider2D> spawnedThisEvent = new List<Collider2D>();
+
+        if (splitRemaining > 0)
+        {
+            HandleSplit(hitPosition, hitCollider, spawnedThisEvent);
+        }
+
+        if (chainRemaining > 0)
+        {
+            HandleChain(hitPosition, hitCollider);
+        }
     }
 
     #endregion
+
+    private void HandleSplit(Vector2 hitPosition, Collider2D hitCollider, List<Collider2D> spawnedThisEvent)
+    {
+        Vector2 baseDir = direction.sqrMagnitude > 0.0001f ? direction.normalized : Vector2.right;
+        float splitAngle = 25f;
+        Vector2[] dirs = new Vector2[]
+        {
+            Quaternion.Euler(0f, 0f, splitAngle * 0.5f) * baseDir,
+            Quaternion.Euler(0f, 0f, -splitAngle * 0.5f) * baseDir
+        };
+
+        foreach (var dir in dirs)
+        {
+            ProjectileDamage spawned = SpawnFollowUpProjectile(hitPosition + dir * 0.25f, dir, chainRemaining, splitRemaining - 1, hitCollider, spawnedThisEvent);
+            if (spawned == null)
+                continue;
+
+            Collider2D col = spawned.GetComponent<Collider2D>();
+            if (col != null)
+            {
+                spawnedThisEvent.Add(col);
+            }
+        }
+
+        // Prevent freshly split projectiles from consuming each other immediately
+        for (int i = 0; i < spawnedThisEvent.Count; i++)
+        {
+            for (int j = i + 1; j < spawnedThisEvent.Count; j++)
+            {
+                var a = spawnedThisEvent[i];
+                var b = spawnedThisEvent[j];
+                if (a != null && b != null)
+                {
+                    Physics2D.IgnoreCollision(a, b);
+                }
+            }
+        }
+    }
+
+    private void HandleChain(Vector2 hitPosition, Collider2D hitCollider)
+    {
+        int mask = enemyLayerMask.value;
+        if (mask == 0 && hitCollider != null)
+        {
+            mask = 1 << hitCollider.gameObject.layer;
+        }
+
+        Collider2D[] hits = Physics2D.OverlapCircleAll(hitPosition, maxChainDistance, mask);
+        Collider2D best = null;
+        float bestDist = float.MaxValue;
+
+        foreach (var h in hits)
+        {
+            if (h == null || h == hitCollider)
+                continue;
+
+            if (ownerCollider != null && h == ownerCollider)
+                continue;
+
+            CharacterStats stats = h.GetComponentInParent<CharacterStats>();
+            if (stats == null)
+                continue;
+
+            float dist = Vector2.SqrMagnitude((Vector2)h.bounds.center - hitPosition);
+            if (dist < bestDist)
+            {
+                bestDist = dist;
+                best = h;
+            }
+        }
+
+        if (best == null)
+            return;
+
+        Vector2 dir = ((Vector2)best.bounds.center - hitPosition).normalized;
+        SpawnFollowUpProjectile(hitPosition + dir * 0.25f, dir, chainRemaining - 1, splitRemaining, hitCollider, null);
+    }
+
+    private ProjectileDamage SpawnFollowUpProjectile(Vector2 spawnPosition, Vector2 dir, int chainCount, int splitCount, Collider2D ignoreCollider, List<Collider2D> ignoreList)
+    {
+        GameObject clone = Instantiate(gameObject, spawnPosition, Quaternion.identity);
+
+        ProjectileDamage cloneDamage = clone.GetComponent<ProjectileDamage>();
+        if (cloneDamage != null)
+        {
+            cloneDamage.damage = damage;
+            cloneDamage.secondaryDamage = secondaryDamage;
+            cloneDamage.damageType = damageType;
+            cloneDamage.direction = dir;
+            cloneDamage.projectileSpeed = projectileSpeed;
+            cloneDamage.sourceAbilityId = sourceAbilityId;
+            cloneDamage.ownerCollider = ownerCollider;
+            cloneDamage.chainRemaining = Mathf.Max(0, chainCount);
+            cloneDamage.splitRemaining = Mathf.Max(0, splitCount);
+        }
+
+        Collider2D cloneCollider = clone.GetComponent<Collider2D>();
+        if (cloneCollider != null)
+        {
+            if (ownerCollider != null)
+            {
+                Physics2D.IgnoreCollision(cloneCollider, ownerCollider);
+            }
+
+            if (ignoreCollider != null)
+            {
+                Physics2D.IgnoreCollision(cloneCollider, ignoreCollider);
+            }
+
+            if (ignoreList != null)
+            {
+                for (int i = 0; i < ignoreList.Count; i++)
+                {
+                    if (ignoreList[i] != null)
+                    {
+                        Physics2D.IgnoreCollision(cloneCollider, ignoreList[i]);
+                    }
+                }
+            }
+        }
+
+        Rigidbody2D rb = clone.GetComponent<Rigidbody2D>();
+        if (rb != null)
+        {
+            rb.linearVelocity = dir.normalized * projectileSpeed;
+        }
+
+        float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+        clone.transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
+
+        return cloneDamage;
+    }
 
     private void OnDrawGizmosSelected()
     {
