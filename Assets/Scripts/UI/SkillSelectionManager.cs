@@ -251,7 +251,7 @@ public class SkillSelectionManager : MonoBehaviour
 
         for (int i = 0; i < choicesToShow; i++)
         {
-            int pickIndex = Random.Range(0, availableIndexes.Count);
+            int pickIndex = UnityEngine.Random.Range(0, availableIndexes.Count);
             int poolIndex = availableIndexes[pickIndex];
             availableIndexes.RemoveAt(pickIndex);
 
