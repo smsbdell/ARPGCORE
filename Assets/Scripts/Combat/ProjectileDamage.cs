@@ -22,6 +22,9 @@ public class ProjectileDamage : MonoBehaviour
     [Tooltip("Speed the projectile should travel at if driven by code instead of physics.")]
     public float projectileSpeed = 10f;
 
+    [Tooltip("Normalized direction used for transform-driven movement when no Rigidbody2D is present.")]
+    public Vector2 direction = Vector2.right;
+
     [Header("Source & Ownership")]
     [Tooltip("Ability id that spawned this projectile.")]
     public string sourceAbilityId;
@@ -47,9 +50,11 @@ public class ProjectileDamage : MonoBehaviour
 
     private bool _damageInitialized;
     private float _lifeTimer;
+    private Rigidbody2D _rb;
 
     private void Awake()
     {
+        _rb = GetComponent<Rigidbody2D>();
         InitializeDamageFromAbility();
     }
 
@@ -60,6 +65,11 @@ public class ProjectileDamage : MonoBehaviour
 
     private void Update()
     {
+        if (_rb == null && projectileSpeed > 0f)
+        {
+            transform.position += (Vector3)(direction.normalized * projectileSpeed * Time.deltaTime);
+        }
+
         if (lifetime > 0f)
         {
             _lifeTimer -= Time.deltaTime;
