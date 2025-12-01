@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -578,15 +579,17 @@ public class SkillSelectionManager : MonoBehaviour
 
         foreach (string wt in weaponTags)
         {
-            if (string.IsNullOrEmpty(wt))
+            if (string.IsNullOrWhiteSpace(wt))
                 continue;
+
+            string weaponTag = wt.Trim();
 
             foreach (string at in ability.tags)
             {
-                if (string.IsNullOrEmpty(at))
+                if (string.IsNullOrWhiteSpace(at))
                     continue;
 
-                if (wt == at)
+                if (string.Equals(weaponTag, at.Trim(), StringComparison.OrdinalIgnoreCase))
                     return true;
             }
         }
