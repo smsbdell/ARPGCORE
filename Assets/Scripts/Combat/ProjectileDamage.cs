@@ -65,16 +65,19 @@ public class ProjectileDamage : MonoBehaviour
     private bool _damageInitialized;
     private float _lifeTimer;
     private Rigidbody2D _rb;
+    private int _resolvedEnemyMask;
 
     private void Awake()
     {
         _rb = GetComponent<Rigidbody2D>();
+        _resolvedEnemyMask = ResolveEnemyMask();
         InitializeDamageFromAbility();
     }
 
     private void Start()
     {
         _lifeTimer = lifetime;
+        _resolvedEnemyMask = ResolveEnemyMask();
     }
 
     private void Update()
@@ -92,6 +95,15 @@ public class ProjectileDamage : MonoBehaviour
                 Destroy(gameObject);
             }
         }
+    }
+
+    private int ResolveEnemyMask()
+    {
+        if (enemyLayerMask.value != 0)
+            return enemyLayerMask.value;
+
+        int monsterLayer = LayerMask.NameToLayer("Monster");
+        return monsterLayer >= 0 ? 1 << monsterLayer : 0;
     }
 
     private void InitializeDamageFromAbility()
@@ -194,6 +206,10 @@ public class ProjectileDamage : MonoBehaviour
         if (ownerCollider != null && other == ownerCollider)
             return;
 
+        // Only process collisions against configured enemy layers
+        if (_resolvedEnemyMask != 0 && (_resolvedEnemyMask & (1 << other.gameObject.layer)) == 0)
+            return;
+
         CharacterStats targetStats = other.GetComponentInParent<CharacterStats>();
         if (targetStats != null)
         {
@@ -244,15 +260,7 @@ public class ProjectileDamage : MonoBehaviour
         Vector2 center = hitCollider.transform.position;
         float radius = maxChainDistance;
 
-        // If the layer mask wasn't configured in the inspector, fall back to the hit target's layer
-        // so we can still find nearby enemies on that same layer.
-        int mask = enemyLayerMask.value;
-        if (mask == 0)
-        {
-            mask = 1 << hitCollider.gameObject.layer;
-        }
-
-        var hits = Physics2D.OverlapCircleAll(center, radius, mask);
+        var hits = Physics2D.OverlapCircleAll(center, radius, _resolvedEnemyMask);
         int arcs = 3;
         int count = 0;
 
@@ -291,7 +299,7 @@ public class ProjectileDamage : MonoBehaviour
         Vector2 center = hitCollider.transform.position;
         float radius = 1.5f; // adjust as needed
 
-        var hits = Physics2D.OverlapCircleAll(center, radius, enemyLayerMask);
+        var hits = Physics2D.OverlapCircleAll(center, radius, _resolvedEnemyMask);
         foreach (var h in hits)
         {
             CharacterStats stats = h.GetComponentInParent<CharacterStats>();
@@ -427,13 +435,7 @@ public class ProjectileDamage : MonoBehaviour
 
     private void HandleChain(Vector2 hitPosition, Collider2D hitCollider)
     {
-        int mask = enemyLayerMask.value;
-        if (mask == 0 && hitCollider != null)
-        {
-            mask = 1 << hitCollider.gameObject.layer;
-        }
-
-        Collider2D[] hits = Physics2D.OverlapCircleAll(hitPosition, maxChainDistance, mask);
+        Collider2D[] hits = Physics2D.OverlapCircleAll(hitPosition, maxChainDistance, _resolvedEnemyMask);
         Collider2D best = null;
         float bestDist = float.MaxValue;
 
@@ -482,6 +484,7 @@ public class ProjectileDamage : MonoBehaviour
             cloneDamage.splitRemaining = Mathf.Max(0, splitCount);
             cloneDamage.allowSplitAndChain = allowSplitAndChain;
             cloneDamage.enemyLayerMask = enemyLayerMask;
+            cloneDamage._resolvedEnemyMask = _resolvedEnemyMask;
         }
 
         Collider2D cloneCollider = clone.GetComponent<Collider2D>();
