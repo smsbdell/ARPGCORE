@@ -21,6 +21,12 @@ public class AutoAttackController : MonoBehaviour
         _stats = GetComponent<CharacterStats>();
         _playerSkills = GetComponent<PlayerSkills>();
         _ownerCollider = GetComponent<Collider2D>();
+
+        // Some player prefabs keep the hitbox on a child; grab that if no collider exists on the root.
+        if (_ownerCollider == null)
+        {
+            _ownerCollider = GetComponentInChildren<Collider2D>();
+        }
     }
 
     private void Start()
@@ -177,6 +183,12 @@ public class AutoAttackController : MonoBehaviour
                         projDamage.damageType = ability.damageType;
                         projDamage.sourceAbilityId = ability.id;
                         projDamage.ownerCollider = _ownerCollider;
+                    }
+
+                    Collider2D projCollider = projectile.GetComponent<Collider2D>();
+                    if (projCollider != null && _ownerCollider != null)
+                    {
+                        Physics2D.IgnoreCollision(projCollider, _ownerCollider);
                     }
 
                     Rigidbody2D rb = projectile.GetComponent<Rigidbody2D>();
