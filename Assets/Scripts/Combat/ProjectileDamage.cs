@@ -50,6 +50,9 @@ public class ProjectileDamage : MonoBehaviour
     [Tooltip("How many more times this projectile can split into additional projectiles.")]
     public int splitRemaining = 0;
 
+    [Tooltip("If false, this projectile will not perform chain or split follow-ups when it hits.")]
+    public bool allowSplitAndChain = true;
+
     [Tooltip("Maximum distance a chain can jump to another target.")]
     public float maxChainDistance = 10f;
 
@@ -204,7 +207,10 @@ public class ProjectileDamage : MonoBehaviour
         }
 
         HandleSecondaryEffects(other, targetStats);
-        HandleSplitAndChain(other, targetStats);
+        if (allowSplitAndChain)
+        {
+            HandleSplitAndChain(other, targetStats);
+        }
 
         Destroy(gameObject);
     }
@@ -330,6 +336,11 @@ public class ProjectileDamage : MonoBehaviour
                 shardDamage.direction = shardDir;
                 shardDamage.projectileSpeed = projectileSpeed * 0.75f;
                 shardDamage.ownerCollider = ownerCollider;
+                shardDamage.chainRemaining = 0;
+                shardDamage.splitRemaining = 0;
+                shardDamage.allowSplitAndChain = false;
+                shardDamage.enemyLayerMask = enemyLayerMask;
+                shardDamage.sourceAbilityId = sourceAbilityId;
             }
 
             Collider2D shardCollider = shard.GetComponent<Collider2D>();
@@ -469,6 +480,8 @@ public class ProjectileDamage : MonoBehaviour
             cloneDamage.ownerCollider = ownerCollider;
             cloneDamage.chainRemaining = Mathf.Max(0, chainCount);
             cloneDamage.splitRemaining = Mathf.Max(0, splitCount);
+            cloneDamage.allowSplitAndChain = allowSplitAndChain;
+            cloneDamage.enemyLayerMask = enemyLayerMask;
         }
 
         Collider2D cloneCollider = clone.GetComponent<Collider2D>();
