@@ -19,11 +19,8 @@ public class YSortSprite : MonoBehaviour
     [Tooltip("Multiplier for converting world Y to sorting order. Higher value = finer separation.")]
     public float sortFactor = 100f;
 
-    [Tooltip("If enabled, the computed order will be clamped so it never goes below 'minimumSortingOrder'.")]
-    public bool useMinimumSortingOrder = false;
-
     [Tooltip("Clamp so the computed order never goes below this value (useful to keep sprites above ground).")]
-    public int minimumSortingOrder = 0;
+    public int minimumSortingOrder = 1000;
 
     private SpriteRenderer _spriteRenderer;
 
@@ -45,10 +42,7 @@ public class YSortSprite : MonoBehaviour
     {
         // Lower Y => higher order (in front), Higher Y => lower order (behind)
         int order = sortingOffset + Mathf.RoundToInt(-transform.position.y * sortFactor);
-        if (useMinimumSortingOrder)
-        {
-            order = Mathf.Max(order, minimumSortingOrder);
-        }
+        order = Mathf.Max(order, minimumSortingOrder);
         _spriteRenderer.sortingOrder = order;
     }
 }
