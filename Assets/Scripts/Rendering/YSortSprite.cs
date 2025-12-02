@@ -1,10 +1,9 @@
 using UnityEngine;
 
 /// <summary>
-/// Sorts a SpriteRenderer's order based on its Y position, so objects lower on the screen
-/// render in front of objects higher up (classic top-down sorting).
-/// Attach this to the player, monsters, and any dynamic or static props that should obey Y-sorting.
-/// Ground tiles should NOT use this; they should stay at a fixed low sortingOrder.
+/// Sorts a SpriteRenderer's order based on its world-space Y position so that lower objects
+/// render in front of higher ones. The base sorting order comes from the SpriteRenderer's
+/// existing value, preserving any manual layer separation between ground, decals, and actors.
 /// </summary>
 [RequireComponent(typeof(SpriteRenderer))]
 public class YSortSprite : MonoBehaviour
@@ -16,30 +15,21 @@ public class YSortSprite : MonoBehaviour
     [Tooltip("Offset applied to the computed sorting order. Use this to bump certain sprites in front/behind others.")]
     public int sortingOffset = 0;
 
-    [Tooltip("Multiplier for converting position to sorting order. For screen-space sorting a value around 1 is typical.")]
-    public float sortFactor = 1f;
+    [Tooltip("Multiplier for converting world Y to sorting order. Higher values create wider spacing between orders.")]
+    public float sortFactor = 100f;
 
-    private const int DefaultMinimumSortingOrder = 100000;
-
-    [Tooltip("Base sorting order offset. Use a large value to keep world-space sorting clear of zero without clamping together.")]
-    public int minimumSortingOrder = DefaultMinimumSortingOrder;
-
-    [Tooltip("Use the camera's screen-space Y position to sort. Helps prevent far-off world positions from collapsing into the clamp.")]
-    public bool useScreenSpaceSorting = false;
-
-    [Tooltip("Only update sorting while the renderer is visible on screen.")]
-    public bool onlySortWhenVisible = true;
-
-    [Tooltip("Camera used for screen-space sorting. If left null, Camera.main is used.")]
-    public Camera sortingCamera;
+    [Tooltip("Base sorting order taken from the SpriteRenderer at startup. Use this to set the ground/character layer separation.")]
+    public int baseSortingOrder = 0;
 
     private SpriteRenderer _spriteRenderer;
 
     private void Awake()
     {
         _spriteRenderer = GetComponent<SpriteRenderer>();
-        if (sortingCamera == null)
-            sortingCamera = Camera.main;
+
+        // Capture any manually authored sorting order so designers can keep ground or decals on specific layers.
+        if (baseSortingOrder == 0)
+            baseSortingOrder = _spriteRenderer.sortingOrder;
 
         UpdateSortingOrder();
     }
@@ -48,20 +38,14 @@ public class YSortSprite : MonoBehaviour
     {
         isDynamic = true;
         sortingOffset = 0;
-        sortFactor = 1f;
-        minimumSortingOrder = DefaultMinimumSortingOrder;
-        useScreenSpaceSorting = false;
-        onlySortWhenVisible = true;
-        sortingCamera = null;
+        sortFactor = 100f;
+        baseSortingOrder = 0;
     }
 
     private void OnValidate()
     {
-        if (minimumSortingOrder < DefaultMinimumSortingOrder)
-            minimumSortingOrder = DefaultMinimumSortingOrder;
-
         if (sortFactor <= 0f)
-            sortFactor = 1f;
+            sortFactor = 100f;
     }
 
     private void LateUpdate()
@@ -74,24 +58,8 @@ public class YSortSprite : MonoBehaviour
 
     public void UpdateSortingOrder()
     {
-        if (onlySortWhenVisible && !_spriteRenderer.isVisible)
-            return;
-
-        float yContribution;
-
-        if (useScreenSpaceSorting && sortingCamera != null)
-        {
-            // Screen space Y: bottom of the screen should be in front of the top.
-            Vector3 screenPos = sortingCamera.WorldToScreenPoint(transform.position);
-            yContribution = (sortingCamera.pixelHeight - screenPos.y) * sortFactor;
-        }
-        else
-        {
-            // Fallback to world Y based sorting.
-            yContribution = -transform.position.y * sortFactor;
-        }
-
-        int order = minimumSortingOrder + sortingOffset + Mathf.RoundToInt(yContribution);
+        float yContribution = -transform.position.y * sortFactor;
+        int order = baseSortingOrder + sortingOffset + Mathf.RoundToInt(yContribution);
         _spriteRenderer.sortingOrder = order;
     }
 }
