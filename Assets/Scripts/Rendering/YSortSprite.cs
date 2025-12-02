@@ -8,7 +8,12 @@ using UnityEngine;
 [RequireComponent(typeof(SpriteRenderer))]
 public class YSortSprite : MonoBehaviour
 {
-    private const int DefaultBaseLayerOffset = 100000;
+    // Unity sorting orders are clamped internally to a signed 16-bit range (-32768..32767).
+    // Keeping our offsets within this window avoids silent clamping that can collapse
+    // multiple sprites to the same order and cause unexpected depth popping.
+    private const int MinSortingOrder = short.MinValue;
+    private const int MaxSortingOrder = short.MaxValue;
+    private const int DefaultBaseLayerOffset = 1000;
 
     [Tooltip("If true, the sorting order will be updated every frame (for moving objects like the player). " +
              "If false, it will be set once on Start (for static props like trees/rocks).")]
@@ -39,6 +44,10 @@ public class YSortSprite : MonoBehaviour
         if (baseLayerOffset == 0)
             baseLayerOffset = DefaultBaseLayerOffset;
 
+        baseLayerOffset = Mathf.Clamp(baseLayerOffset, MinSortingOrder, MaxSortingOrder);
+        baseSortingOrder = Mathf.Clamp(baseSortingOrder, MinSortingOrder, MaxSortingOrder);
+        sortingOffset = Mathf.Clamp(sortingOffset, MinSortingOrder, MaxSortingOrder);
+
         UpdateSortingOrder();
     }
 
@@ -58,6 +67,10 @@ public class YSortSprite : MonoBehaviour
 
         if (baseLayerOffset <= 0)
             baseLayerOffset = DefaultBaseLayerOffset;
+
+        baseLayerOffset = Mathf.Clamp(baseLayerOffset, MinSortingOrder, MaxSortingOrder);
+        baseSortingOrder = Mathf.Clamp(baseSortingOrder, MinSortingOrder, MaxSortingOrder);
+        sortingOffset = Mathf.Clamp(sortingOffset, MinSortingOrder, MaxSortingOrder);
     }
 
     private void LateUpdate()
@@ -76,6 +89,6 @@ public class YSortSprite : MonoBehaviour
         // based on Y location.
         float yContribution = -transform.position.y * sortFactor;
         int order = baseLayerOffset + baseSortingOrder + sortingOffset + Mathf.RoundToInt(yContribution);
-        _spriteRenderer.sortingOrder = order;
+        _spriteRenderer.sortingOrder = Mathf.Clamp(order, MinSortingOrder, MaxSortingOrder);
     }
 }
