@@ -16,17 +16,29 @@ public class YSortSprite : MonoBehaviour
     [Tooltip("Offset applied to the computed sorting order. Use this to bump certain sprites in front/behind others.")]
     public int sortingOffset = 0;
 
-    [Tooltip("Multiplier for converting world Y to sorting order. Higher value = finer separation.")]
-    public float sortFactor = 100f;
+    [Tooltip("Multiplier for converting position to sorting order. For screen-space sorting a value around 1 is typical.")]
+    public float sortFactor = 1f;
 
-    [Tooltip("Clamp so the computed order never goes below this value (useful to keep sprites above ground).")]
+    [Tooltip("Base sorting order offset. Keeps sprites above ground layers without clamping them together.")]
     public int minimumSortingOrder = 1000;
+
+    [Tooltip("Use the camera's screen-space Y position to sort. Helps prevent far-off world positions from collapsing into the clamp.")]
+    public bool useScreenSpaceSorting = true;
+
+    [Tooltip("Only update sorting while the renderer is visible on screen.")]
+    public bool onlySortWhenVisible = true;
+
+    [Tooltip("Camera used for screen-space sorting. If left null, Camera.main is used.")]
+    public Camera sortingCamera;
 
     private SpriteRenderer _spriteRenderer;
 
     private void Awake()
     {
         _spriteRenderer = GetComponent<SpriteRenderer>();
+        if (sortingCamera == null)
+            sortingCamera = Camera.main;
+
         UpdateSortingOrder();
     }
 
@@ -40,9 +52,24 @@ public class YSortSprite : MonoBehaviour
 
     public void UpdateSortingOrder()
     {
-        // Lower Y => higher order (in front), Higher Y => lower order (behind)
-        int order = sortingOffset + Mathf.RoundToInt(-transform.position.y * sortFactor);
-        order = Mathf.Max(order, minimumSortingOrder);
+        if (onlySortWhenVisible && !_spriteRenderer.isVisible)
+            return;
+
+        float yContribution;
+
+        if (useScreenSpaceSorting && sortingCamera != null)
+        {
+            // Screen space Y: bottom of the screen should be in front of the top.
+            Vector3 screenPos = sortingCamera.WorldToScreenPoint(transform.position);
+            yContribution = (sortingCamera.pixelHeight - screenPos.y) * sortFactor;
+        }
+        else
+        {
+            // Fallback to world Y based sorting.
+            yContribution = -transform.position.y * sortFactor;
+        }
+
+        int order = minimumSortingOrder + sortingOffset + Mathf.RoundToInt(yContribution);
         _spriteRenderer.sortingOrder = order;
     }
 }
