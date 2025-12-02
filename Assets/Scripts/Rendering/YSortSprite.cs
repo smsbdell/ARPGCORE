@@ -8,6 +8,8 @@ using UnityEngine;
 [RequireComponent(typeof(SpriteRenderer))]
 public class YSortSprite : MonoBehaviour
 {
+    private const int DefaultBaseLayerOffset = 100000;
+
     [Tooltip("If true, the sorting order will be updated every frame (for moving objects like the player). " +
              "If false, it will be set once on Start (for static props like trees/rocks).")]
     public bool isDynamic = true;
@@ -17,6 +19,9 @@ public class YSortSprite : MonoBehaviour
 
     [Tooltip("Multiplier for converting world Y to sorting order. Higher values create wider spacing between orders.")]
     public float sortFactor = 100f;
+
+    [Tooltip("Large positive offset added before applying Y-based sorting to keep orders away from zero/negative values.")]
+    public int baseLayerOffset = DefaultBaseLayerOffset;
 
     [Tooltip("Base sorting order taken from the SpriteRenderer at startup. Use this to set the ground/character layer separation.")]
     public int baseSortingOrder = 0;
@@ -31,6 +36,9 @@ public class YSortSprite : MonoBehaviour
         if (baseSortingOrder == 0)
             baseSortingOrder = _spriteRenderer.sortingOrder;
 
+        if (baseLayerOffset == 0)
+            baseLayerOffset = DefaultBaseLayerOffset;
+
         UpdateSortingOrder();
     }
 
@@ -39,6 +47,7 @@ public class YSortSprite : MonoBehaviour
         isDynamic = true;
         sortingOffset = 0;
         sortFactor = 100f;
+        baseLayerOffset = DefaultBaseLayerOffset;
         baseSortingOrder = 0;
     }
 
@@ -46,6 +55,9 @@ public class YSortSprite : MonoBehaviour
     {
         if (sortFactor <= 0f)
             sortFactor = 100f;
+
+        if (baseLayerOffset <= 0)
+            baseLayerOffset = DefaultBaseLayerOffset;
     }
 
     private void LateUpdate()
@@ -62,7 +74,7 @@ public class YSortSprite : MonoBehaviour
         // their pivot/center, avoiding terrain popping in front of characters at the top of
         // the screen.
         float yContribution = -_spriteRenderer.bounds.min.y * sortFactor;
-        int order = baseSortingOrder + sortingOffset + Mathf.RoundToInt(yContribution);
+        int order = baseLayerOffset + baseSortingOrder + sortingOffset + Mathf.RoundToInt(yContribution);
         _spriteRenderer.sortingOrder = order;
     }
 }
