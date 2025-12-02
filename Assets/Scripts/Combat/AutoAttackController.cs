@@ -116,7 +116,21 @@ public class AutoAttackController : MonoBehaviour
         }
 
         float levelMultiplier = 1f + (level - 1) * 0.25f;
-        float damage = (ability.baseDamage + _stats.baseDamage) * levelMultiplier;
+        float baseDamage = ability.baseDamage;
+
+        if (_stats != null)
+        {
+            if (ability.usesWeaponDamage)
+            {
+                baseDamage = _stats.GetRandomWeaponDamage() * ability.weaponDamageMultiplier;
+            }
+            else
+            {
+                baseDamage += _stats.baseDamage;
+            }
+        }
+
+        float damage = baseDamage * levelMultiplier;
 
         bool isCrit = Random.value < _stats.critChance;
         if (isCrit)
