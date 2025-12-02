@@ -58,7 +58,10 @@ public class YSortSprite : MonoBehaviour
 
     public void UpdateSortingOrder()
     {
-        float yContribution = -transform.position.y * sortFactor;
+        // Use the bottom of the renderer so taller sprites sort by their feet rather than
+        // their pivot/center, avoiding terrain popping in front of characters at the top of
+        // the screen.
+        float yContribution = -_spriteRenderer.bounds.min.y * sortFactor;
         int order = baseSortingOrder + sortingOffset + Mathf.RoundToInt(yContribution);
         _spriteRenderer.sortingOrder = order;
     }
