@@ -92,26 +92,8 @@ public class PlayerEquipment : MonoBehaviour
         if (item == null || item.modifiers == null)
             return;
 
-        var m = item.modifiers;
-
-        _currentTotalMods.maxHealth += m.maxHealth;
-        _currentTotalMods.moveSpeed += m.moveSpeed;
-        _currentTotalMods.baseDamage += m.baseDamage;
-
-        _currentTotalMods.critChance += m.critChance;
-        _currentTotalMods.critMultiplier += m.critMultiplier;
-        _currentTotalMods.attackSpeedMultiplier += m.attackSpeedMultiplier;
-        _currentTotalMods.projectileCount += m.projectileCount;
-        _currentTotalMods.projectileSpreadAngle += m.projectileSpreadAngle;
-        _currentTotalMods.weaponAttackSpeed += m.weaponAttackSpeed;
-        _currentTotalMods.chainCount += m.chainCount;
-        _currentTotalMods.splitCount += m.splitCount;
-
-        _currentTotalMods.armor += m.armor;
-        _currentTotalMods.dodgeChance += m.dodgeChance;
-
-        _currentTotalMods.xpGainMultiplier += m.xpGainMultiplier;
-        _currentTotalMods.cooldownReduction += m.cooldownReduction;
+        StatModifierMigrationUtility.MigrateLegacyValues(item.modifiers);
+        _currentTotalMods.AddEntriesFrom(item.modifiers);
     }
 
     private void ApplyMods(StatModifier m, int sign)
@@ -119,24 +101,13 @@ public class PlayerEquipment : MonoBehaviour
         if (m == null)
             return;
 
-        _stats.maxHealth += sign * m.maxHealth;
-        _stats.moveSpeed += sign * m.moveSpeed;
-        _stats.baseDamage += sign * m.baseDamage;
+        if (m.entries == null)
+            return;
 
-        _stats.critChance += sign * m.critChance;
-        _stats.critMultiplier += sign * m.critMultiplier;
-        _stats.attackSpeedMultiplier += sign * m.attackSpeedMultiplier;
-        _stats.projectileCount += sign * m.projectileCount;
-        _stats.projectileSpreadAngle += sign * m.projectileSpreadAngle;
-        _stats.weaponAttackSpeed += sign * m.weaponAttackSpeed;
-        _stats.chainCount += sign * m.chainCount;
-        _stats.splitCount += sign * m.splitCount;
-
-        _stats.armor += sign * m.armor;
-        _stats.dodgeChance += sign * m.dodgeChance;
-
-        _stats.xpGainMultiplier += sign * m.xpGainMultiplier;
-        _stats.cooldownReduction += sign * m.cooldownReduction;
+        foreach (StatEntry entry in m.entries)
+        {
+            StatRegistry.TryApply(_stats, entry, sign);
+        }
     }
 
     public void Equip(EquipmentItem item)

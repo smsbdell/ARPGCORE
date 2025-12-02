@@ -92,6 +92,7 @@ public class EquipmentDatabase : ScriptableObject
             instance.slot = record.slot;
             instance.tags = record.tags ?? Array.Empty<string>();
             instance.modifiers = record.modifiers ?? new StatModifier();
+            StatModifierMigrationUtility.MigrateLegacyValues(instance.modifiers);
 
             if (!string.IsNullOrEmpty(record.iconResourcePath))
             {
