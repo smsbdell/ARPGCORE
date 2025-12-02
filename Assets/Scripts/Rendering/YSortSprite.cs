@@ -19,11 +19,11 @@ public class YSortSprite : MonoBehaviour
     [Tooltip("Multiplier for converting position to sorting order. For screen-space sorting a value around 1 is typical.")]
     public float sortFactor = 1f;
 
-    [Tooltip("Base sorting order offset. Keeps sprites above ground layers without clamping them together.")]
-    public int minimumSortingOrder = 1000;
+    [Tooltip("Base sorting order offset. Use a large value to keep world-space sorting clear of zero without clamping together.")]
+    public int minimumSortingOrder = 100000;
 
     [Tooltip("Use the camera's screen-space Y position to sort. Helps prevent far-off world positions from collapsing into the clamp.")]
-    public bool useScreenSpaceSorting = true;
+    public bool useScreenSpaceSorting = false;
 
     [Tooltip("Only update sorting while the renderer is visible on screen.")]
     public bool onlySortWhenVisible = true;
