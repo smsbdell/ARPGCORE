@@ -119,6 +119,99 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &14409776
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 14409778}
+  - component: {fileID: 14409777}
+  m_Layer: 0
+  m_Name: MapRoot
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &14409777
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 14409776}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7411ffa79f9c62644970caacdfb17fb8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  groundTilePrefab: {fileID: 8682810161860510075, guid: 1659ffbfa9e5ff845b5ff3e36bdc9d09, type: 3}
+  width: 50
+  height: 50
+  tileSize: 1
+  centerOnZero: 1
+  groundSortingOrder: -1000
+  createBoundaryColliders: 1
+  boundaryThickness: 1
+  boundaryLayer: 0
+  spawnObjects: 1
+  objectDensityMultiplier: 1
+  clearRadiusAroundOrigin: 3
+  objectSpawnRules:
+  - name: shrub
+    prefabs:
+    - {fileID: 6810693832431175629, guid: f21be86c64416ce4f82acfcf6a9bc627, type: 3}
+    spawnChance: 0.05
+    alignToTileCenter: 0
+    positionJitter: {x: 0, y: 0}
+    minScale: 0.1
+    maxScale: 0.1
+    randomRotation: 0
+  - name: 
+    prefabs:
+    - {fileID: 0}
+    spawnChance: 0.05
+    alignToTileCenter: 0
+    positionJitter: {x: 0, y: 0}
+    minScale: 0.1
+    maxScale: 0.1
+    randomRotation: 0
+  - name: tree
+    prefabs:
+    - {fileID: 8680225238031117000, guid: b4e886c6c4b4bc44dbc1b515cc078521, type: 3}
+    spawnChance: 0.03
+    alignToTileCenter: 0
+    positionJitter: {x: 0, y: 0}
+    minScale: 0.2
+    maxScale: 0.2
+    randomRotation: 0
+  - name: grass
+    prefabs:
+    - {fileID: 9219816044482172494, guid: e71692c67d17873469e3b79ec4b09ab5, type: 3}
+    spawnChance: 0.07
+    alignToTileCenter: 0
+    positionJitter: {x: 0, y: 0}
+    minScale: 0.1
+    maxScale: 0.1
+    randomRotation: 0
+--- !u!4 &14409778
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 14409776}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -26.13546, y: -9.47083, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &22216758
 GameObject:
   m_ObjectHideFlags: 0
@@ -1654,7 +1747,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0.014795564}
+  m_AnchoredPosition: {x: 0, y: 0.00028715894}
   m_SizeDelta: {x: 0, y: 300}
   m_Pivot: {x: 0, y: 1}
 --- !u!1 &300079416
@@ -2798,6 +2891,7 @@ GameObject:
   - component: {fileID: 519420031}
   - component: {fileID: 519420029}
   - component: {fileID: 519420030}
+  - component: {fileID: 519420033}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -2923,6 +3017,21 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &519420033
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 519420028}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6aef0d3ce0923c643abc7b8a4405f86e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  target: {fileID: 608403053}
+  offset: {x: 0, y: 0, z: -10}
+  smoothTime: 0
 --- !u!1 &575971347
 GameObject:
   m_ObjectHideFlags: 0
@@ -3006,7 +3115,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 2067942618}
   m_Direction: 2
   m_Value: 0
-  m_Size: 0.9999712
+  m_Size: 0.99998254
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -3067,6 +3176,7 @@ GameObject:
   - component: {fileID: 608403056}
   - component: {fileID: 608403057}
   - component: {fileID: 608403058}
+  - component: {fileID: 608403059}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -3112,22 +3222,27 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHealth: 100
+  currentHealth: 0
   moveSpeed: 5
-  baseDamage: 0
-  critChance: 0.1
-  critMultiplier: 2
-  attackSpeedMultiplier: 1
-  projectileCount: 0
-  projectileSpreadAngle: 0
-  weaponAttackSpeed: 1
-  chainCount: 0
-  splitCount: 0
   armor: 0
   dodgeChance: 0
-  xpGainMultiplier: 1
+  baseDamage: 0
+  projectileCount: 0
+  projectileSpreadAngle: 0
+  splitCount: 0
+  chainCount: 0
   cooldownReduction: 0
-  destroyOnDeath: 0
-  currentHealth: 0
+  attackSpeedMultiplier: 1
+  weaponDamageMin: 0
+  weaponDamageMax: 0
+  level: 1
+  currentXP: 0
+  xpToNextLevel: 100
+  xpGainMultiplier: 1
+  xpGrowthFactor: 1.2
+  critChance: 0.1
+  critMultiplier: 2
+  weaponAttackSpeed: 1
 --- !u!50 &608403052
 Rigidbody2D:
   serializedVersion: 5
@@ -3320,6 +3435,21 @@ MonoBehaviour:
   boots: {fileID: 0}
   gloves: {fileID: 0}
   pants: {fileID: 0}
+--- !u!114 &608403059
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 608403047}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1f600f499cdf28048b89da300ac4b7bf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isDynamic: 1
+  sortingOffset: 0
+  sortFactor: 5
 --- !u!1 &613811305
 GameObject:
   m_ObjectHideFlags: 0
@@ -5144,7 +5274,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7964cbd75f8aef84e9f09c1ba071622f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  jsonFileNames:
+  abilityJson: {fileID: 0}
+  streamingJsonFiles:
+  - abilities.json
   - abilities_generic.json
   - abilities_bow.json
   abilities: []
@@ -9227,3 +9359,4 @@ SceneRoots:
   - {fileID: 22216759}
   - {fileID: 300079418}
   - {fileID: 498273876}
+  - {fileID: 14409778}

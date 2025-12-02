@@ -102,4 +102,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isDynamic: 1
   sortingOffset: 0
-  sortFactor: 100
+  sortFactor: 5
