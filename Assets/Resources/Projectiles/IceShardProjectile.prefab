@@ -166,18 +166,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   damage: 10
-  projectileSpeed: 15
-  direction: {x: 1, y: 0}
-  maxLifetime: 3
-  splitRemaining: 0
-  chainRemaining: 0
-  maxChainRange: 8
+  secondaryDamage: 10
   damageType: 3
-  sourceAbilityId: 
-  hitLayers:
-    serializedVersion: 2
-    m_Bits: 64
-  ownerCollider: {fileID: 0}
   lightningStrikePrefab: {fileID: 0}
   iceShardProjectilePrefab: {fileID: 0}
   lightningStrikeLifetime: 0.15
+  projectileSpeed: 15
+  direction: {x: 1, y: 0}
+  sourceAbilityId: 
+  ownerCollider: {fileID: 0}
+  chainRemaining: 0
+  splitRemaining: 0
+  allowSplitAndChain: 0
+  maxChainDistance: 10
+  enemyLayerMask:
+    serializedVersion: 2
+    m_Bits: 64
+  lifetime: 5
