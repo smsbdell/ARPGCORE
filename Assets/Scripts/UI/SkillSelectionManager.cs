@@ -407,22 +407,6 @@ public class SkillSelectionManager : MonoBehaviour
         }
     }
 
-    private (float damage, float cooldown) EvaluateAbility(AbilityData ability, int level)
-    {
-        if (ability == null || _stats == null)
-            return (0f, 0f);
-
-        float levelMultiplier = 1f + (level - 1) * 0.25f;
-        float baseDamage = (ability.baseDamage + _stats.baseDamage) * levelMultiplier;
-
-        float hasteFactor = Mathf.Max(_stats.attackSpeedMultiplier, 0.01f);
-        float cdrFactor = 1f - Mathf.Clamp01(_stats.cooldownReduction);
-
-        float effectiveCooldown = ability.cooldown * cdrFactor / hasteFactor;
-
-        return (baseDamage, effectiveCooldown);
-    }
-
     private string BuildNewActiveDescription(SkillChoice choice)
     {
         if (AbilityDatabase.Instance == null)
@@ -432,11 +416,16 @@ public class SkillSelectionManager : MonoBehaviour
         if (ability == null || _stats == null)
             return choice.description;
 
-        var next = EvaluateAbility(ability, 1);
+        SkillEvaluationResult next = SkillDescriptionUtility.EvaluateAbility(ability, 1, _stats, _playerSkills);
+
+        string secondaryLine = Mathf.Abs(next.secondaryDamage - next.primaryDamage) > 0.01f
+            ? $"Secondary: {next.secondaryDamage:F0}\n"
+            : string.Empty;
 
         return $"New skill: {ability.displayName}\n" +
-               $"Damage (Lv1): {next.damage:F0}\n" +
-               $"Effective CD: {next.cooldown:F2}s";
+               $"Damage (Lv1): {next.primaryDamage:F0}\n" +
+               secondaryLine +
+               $"Effective CD: {next.effectiveCooldown:F2}s";
     }
 
     private string BuildLevelUpActiveDescription(SkillChoice choice)
@@ -451,17 +440,17 @@ public class SkillSelectionManager : MonoBehaviour
         int currentLevel = Mathf.Max(1, _playerSkills.GetActiveLevel(ability.id));
         int nextLevel = currentLevel + 1;
 
-        var cur = EvaluateAbility(ability, currentLevel);
-        var nxt = EvaluateAbility(ability, nextLevel);
+        SkillEvaluationResult cur = SkillDescriptionUtility.EvaluateAbility(ability, currentLevel, _stats, _playerSkills);
+        SkillEvaluationResult nxt = SkillDescriptionUtility.EvaluateAbility(ability, nextLevel, _stats, _playerSkills);
 
         return $"Level up {ability.displayName} (Lv {currentLevel} → {nextLevel})\n" +
-               $"Damage: {cur.damage:F0} → {nxt.damage:F0}\n" +
-               $"Effective CD: {cur.cooldown:F2}s";
+               $"Damage: {cur.primaryDamage:F0} → {nxt.primaryDamage:F0}\n" +
+               $"Effective CD: {cur.effectiveCooldown:F2}s";
     }
 
     private string BuildNewPassiveDescription(SkillChoice choice)
     {
-        return BuildPassiveDescription(choice.id, false);
+        return BuildPassiveDescription(choice.id, true);
     }
 
     private string BuildLevelUpPassiveDescription(SkillChoice choice)
@@ -471,95 +460,7 @@ public class SkillSelectionManager : MonoBehaviour
 
     private string BuildPassiveDescription(string passiveId, bool isLevelUp)
     {
-        if (_stats == null || _playerSkills == null)
-            return passiveId;
-
-        int currentLevel = _playerSkills.GetPassiveLevel(passiveId);
-        int nextLevel = currentLevel + 1;
-
-        switch (passiveId)
-        {
-            case "max_health_up":
-            {
-                float cur = _stats.maxHealth;
-                float nxt = cur + 20f;
-                return $"Vitality (Lv {nextLevel})\nMax Health: {cur:F0} → {nxt:F0}";
-            }
-
-            case "move_speed_up":
-            {
-                float cur = _stats.moveSpeed;
-                float nxt = cur + 0.5f;
-                return $"Haste (Lv {nextLevel})\nMove Speed: {cur:F2} → {nxt:F2}";
-            }
-
-            case "proj_count_up":
-            {
-                int curCount = _stats.projectileCount;
-                int nxtCount = curCount + 1;
-                float curSpread = _stats.projectileSpreadAngle;
-                float nxtSpread = curSpread + 10f;
-                return $"Multi-Shot (Lv {nextLevel})\n" +
-                       $"Projectiles: {curCount} → {nxtCount}\n" +
-                       $"Spread: {curSpread:F0}° → {nxtSpread:F0}°";
-            }
-
-            case "xp_gain_up":
-            {
-                float curMul = _stats.xpGainMultiplier;
-                float nxtMul = curMul + 0.2f;
-                return $"Scholar (Lv {nextLevel})\n" +
-                       $"XP Gain: {curMul * 100f:F0}% → {nxtMul * 100f:F0}%";
-            }
-
-            case "cdr_up":
-            {
-                float cur = _stats.cooldownReduction;
-                float nxt = Mathf.Clamp01(cur + 0.05f);
-                return $"Arcane Focus (Lv {nextLevel})\n" +
-                       $"Cooldown Reduction: {cur * 100f:F0}% → {nxt * 100f:F0}%";
-            }
-
-            case "chain_up":
-            {
-                int cur = _stats.chainCount;
-                int nxt = cur + 1;
-                return $"Chain Mastery (Lv {nextLevel})\nChains: {cur} → {nxt}";
-            }
-
-            case "split_up":
-            {
-                int cur = _stats.splitCount;
-                int nxt = cur + 1;
-                return $"Split Mastery (Lv {nextLevel})\nSplits: {cur} → {nxt}";
-            }
-
-            case "armor_up":
-            {
-                float cur = _stats.armor;
-                float nxt = cur + 10f;
-                return $"Fortified (Lv {nextLevel})\nArmor: {cur:F0} → {nxt:F0}";
-            }
-
-            case "dodge_up":
-            {
-                float cur = _stats.dodgeChance;
-                float nxt = Mathf.Clamp01(cur + 0.03f);
-                return $"Evasion (Lv {nextLevel})\n" +
-                       $"Dodge Chance: {cur * 100f:F1}% → {nxt * 100f:F1}%";
-            }
-
-            case "fireball_chain":
-            {
-                int cur = _playerSkills.GetAbilityChainBonus("fireball");
-                int nxt = cur + 1;
-                return $"Fireball Chain (Lv {nextLevel})\n" +
-                       $"Fireball extra chains: {cur} → {nxt}";
-            }
-
-            default:
-                return passiveId;
-        }
+        return SkillDescriptionUtility.BuildPassiveDescription(passiveId, _playerSkills, _stats, isLevelUp);
     }
 
     private bool IsAbilityAllowedByEquipmentForNewAcquisition(AbilityData ability)

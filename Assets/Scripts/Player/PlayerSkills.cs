@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -14,6 +15,9 @@ public class PlayerSkills : MonoBehaviour
     // Ability-specific modifiers, e.g. extra chains for fireball only.
     private Dictionary<string, int> _abilityChainBonus = new Dictionary<string, int>();
 
+    public static event Action<PlayerSkills> OnPlayerSkillsRegistered;
+    public event Action OnSkillsChanged;
+
     private void Awake()
     {
         _stats = GetComponent<CharacterStats>();
@@ -27,6 +31,9 @@ public class PlayerSkills : MonoBehaviour
             SkillSelectionManager.Instance.RegisterPlayerSkills(this);
             SkillSelectionManager.Instance.ShowInitialChoices();
         }
+
+        OnPlayerSkillsRegistered?.Invoke(this);
+        NotifySkillsChanged();
     }
 
     #region Active skills
@@ -59,6 +66,8 @@ public class PlayerSkills : MonoBehaviour
         }
 
         Debug.Log($"PlayerSkills: learned new active ability '{abilityId}'.");
+
+        NotifySkillsChanged();
     }
 
     public void LevelUpActiveSkill(string abilityId)
@@ -71,6 +80,8 @@ public class PlayerSkills : MonoBehaviour
 
         _activeLevels[abilityId] += 1;
         Debug.Log($"PlayerSkills: leveled active ability '{abilityId}' to {_activeLevels[abilityId]}.");
+
+        NotifySkillsChanged();
     }
 
     #endregion
@@ -101,6 +112,8 @@ public class PlayerSkills : MonoBehaviour
         ApplyPassiveEffect(passiveId);
 
         Debug.Log($"PlayerSkills: learned new passive '{passiveId}'.");
+
+        NotifySkillsChanged();
     }
 
     public void LevelUpPassive(string passiveId)
@@ -115,6 +128,8 @@ public class PlayerSkills : MonoBehaviour
         ApplyPassiveEffect(passiveId);
 
         Debug.Log($"PlayerSkills: leveled passive '{passiveId}' to {_passiveLevels[passiveId]}.");
+
+        NotifySkillsChanged();
     }
 
     private void ApplyPassiveEffect(string passiveId)
@@ -174,6 +189,11 @@ public class PlayerSkills : MonoBehaviour
     }
 
     #endregion
+
+    private void NotifySkillsChanged()
+    {
+        OnSkillsChanged?.Invoke();
+    }
 
     #region Ability-specific queries
 
