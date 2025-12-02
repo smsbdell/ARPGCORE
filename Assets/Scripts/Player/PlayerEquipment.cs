@@ -208,4 +208,13 @@ public class PlayerEquipment : MonoBehaviour
                 return null;
         }
     }
+
+    public void EquipById(string itemId, EquipmentDatabase database)
+    {
+        if (database == null || string.IsNullOrEmpty(itemId))
+            return;
+
+        EquipmentItem item = database.GetItemOrDefault(itemId);
+        Equip(item);
+    }
 }

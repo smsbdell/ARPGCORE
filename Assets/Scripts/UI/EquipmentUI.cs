@@ -22,8 +22,11 @@ public class EquipmentUI : MonoBehaviour
     [Header("References")]
     public PlayerEquipment playerEquipment;
 
-    [Tooltip("All equipment items you want available to equip via this UI.")]
-    public List<EquipmentItem> availableItems = new List<EquipmentItem>();
+    [Header("Data Source")]
+    [Tooltip("Equipment database used to populate the UI at runtime.")]
+    public EquipmentDatabase database;
+    [Tooltip("Fallback list for testing without a database asset.")]
+    public List<EquipmentItem> fallbackItems = new List<EquipmentItem>();
 
     [Header("Item List UI")]
     public Transform itemListParent;
@@ -62,6 +65,7 @@ public class EquipmentUI : MonoBehaviour
             }
         }
 
+        EnsureDatabase();
         BuildItemList();
         HookUpSlotButtons();
         RefreshSlots();
@@ -100,7 +104,7 @@ public class EquipmentUI : MonoBehaviour
             Destroy(itemListParent.GetChild(i).gameObject);
         }
 
-        foreach (EquipmentItem item in availableItems)
+        foreach (EquipmentItem item in GetAvailableItems())
         {
             if (item == null)
                 continue;
@@ -121,6 +125,29 @@ public class EquipmentUI : MonoBehaviour
             EquipmentSlot capturedSlot = slotUI.slot;
             slotUI.button.onClick.AddListener(() => OnSlotClicked(capturedSlot));
         }
+    }
+
+    private void EnsureDatabase()
+    {
+        if (database != null)
+            return;
+
+        TextAsset data = Resources.Load<TextAsset>("Data/equipment_database");
+        if (data != null)
+        {
+            database = ScriptableObject.CreateInstance<EquipmentDatabase>();
+            database.dataFile = data;
+        }
+    }
+
+    private IEnumerable<EquipmentItem> GetAvailableItems()
+    {
+        if (database != null)
+        {
+            return database.Items;
+        }
+
+        return fallbackItems;
     }
 
     public void OnItemSelected(EquipmentItem item)

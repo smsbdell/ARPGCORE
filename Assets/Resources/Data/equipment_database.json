@@ -1,0 +1,40 @@
+{
+  "items": [
+    {
+      "id": "helmet_basic",
+      "displayName": "Traveler's Hood",
+      "description": "A light hood that offers modest protection.",
+      "slot": "Helmet",
+      "tags": ["defense", "starter"],
+      "iconResourcePath": "",
+      "modifiers": {
+        "maxHealth": 10,
+        "armor": 2
+      }
+    },
+    {
+      "id": "ring_spark",
+      "displayName": "Spark Ring",
+      "description": "Channel a hint of power through your hands.",
+      "slot": "Ring1",
+      "tags": ["offense"],
+      "iconResourcePath": "",
+      "modifiers": {
+        "attackSpeedMultiplier": 0.1,
+        "cooldownReduction": 0.05
+      }
+    },
+    {
+      "id": "boots_swift",
+      "displayName": "Swift Boots",
+      "description": "Boots that help you stay ahead of danger.",
+      "slot": "Boots",
+      "tags": ["movement"],
+      "iconResourcePath": "",
+      "modifiers": {
+        "moveSpeed": 0.5,
+        "dodgeChance": 0.02
+      }
+    }
+  ]
+}
