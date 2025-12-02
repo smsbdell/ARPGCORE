@@ -41,76 +41,10 @@ public static class EquipmentDatabaseUtility
                 string header = headers[c].Trim().ToLowerInvariant();
                 string value = columns[c].Trim();
 
-                switch (header)
-                {
-                    case "id":
-                        record.id = value;
-                        break;
-                    case "displayname":
-                        record.displayName = value;
-                        break;
-                    case "description":
-                        record.description = value;
-                        break;
-                    case "slot":
-                        if (Enum.TryParse(value, true, out EquipmentSlot slot))
-                        {
-                            record.slot = slot;
-                        }
-                        break;
-                    case "tags":
-                        record.tags = value.Split(TagSeparators, StringSplitOptions.RemoveEmptyEntries);
-                        break;
-                    case "iconresourcepath":
-                        record.iconResourcePath = value;
-                        break;
+                if (TryProcessCoreField(header, value, record))
+                    continue;
 
-                    case "maxhealth":
-                        modifier.maxHealth = ParseFloat(value);
-                        break;
-                    case "movespeed":
-                        modifier.moveSpeed = ParseFloat(value);
-                        break;
-                    case "basedamage":
-                        modifier.baseDamage = ParseFloat(value);
-                        break;
-                    case "critchance":
-                        modifier.critChance = ParseFloat(value);
-                        break;
-                    case "critmultiplier":
-                        modifier.critMultiplier = ParseFloat(value);
-                        break;
-                    case "attackspeedmultiplier":
-                        modifier.attackSpeedMultiplier = ParseFloat(value);
-                        break;
-                    case "projectilecount":
-                        modifier.projectileCount = ParseInt(value);
-                        break;
-                    case "projectilespreadangle":
-                        modifier.projectileSpreadAngle = ParseFloat(value);
-                        break;
-                    case "weaponattackspeed":
-                        modifier.weaponAttackSpeed = ParseFloat(value);
-                        break;
-                    case "chaincount":
-                        modifier.chainCount = ParseInt(value);
-                        break;
-                    case "splitcount":
-                        modifier.splitCount = ParseInt(value);
-                        break;
-                    case "armor":
-                        modifier.armor = ParseFloat(value);
-                        break;
-                    case "dodgechance":
-                        modifier.dodgeChance = ParseFloat(value);
-                        break;
-                    case "xpgainmultiplier":
-                        modifier.xpGainMultiplier = ParseFloat(value);
-                        break;
-                    case "cooldownreduction":
-                        modifier.cooldownReduction = ParseFloat(value);
-                        break;
-                }
+                TryProcessStatField(header, value, modifier);
             }
 
             record.modifiers = modifier;
@@ -134,9 +68,103 @@ public static class EquipmentDatabaseUtility
         Debug.Log($"Equipment database exported to {savePath}.");
     }
 
+    [MenuItem("ARPG/Equipment/Migrate Legacy Equipment JSON")]
+    public static void MigrateLegacyJson()
+    {
+        string jsonPath = EditorUtility.OpenFilePanel("Select legacy equipment JSON", Application.dataPath, "json");
+        if (string.IsNullOrEmpty(jsonPath))
+            return;
+
+        string json = File.ReadAllText(jsonPath);
+        EquipmentRecordCollection collection = JsonUtility.FromJson<EquipmentRecordCollection>(json);
+        if (collection?.items == null)
+        {
+            Debug.LogWarning("Selected file did not contain any equipment items.");
+            return;
+        }
+
+        foreach (EquipmentRecord record in collection.items)
+        {
+            if (record.modifiers == null)
+                record.modifiers = new StatModifier();
+
+            StatModifierMigrationUtility.MigrateLegacyValues(record.modifiers);
+            StatModifierMigrationUtility.ClearLegacyFields(record.modifiers);
+        }
+
+        string savePath = EditorUtility.SaveFilePanelInProject(
+            "Save Migrated Equipment JSON",
+            "equipment_database_migrated",
+            "json",
+            "Choose where to save the migrated JSON file.");
+
+        if (string.IsNullOrEmpty(savePath))
+            return;
+
+        string migratedJson = JsonUtility.ToJson(collection, true);
+        File.WriteAllText(savePath, migratedJson);
+        AssetDatabase.Refresh();
+        Debug.Log($"Migrated equipment JSON saved to {savePath}.");
+    }
+
     private static string[] SplitCsvLine(string line)
     {
         return line.Split(',');
+    }
+
+    private static bool TryProcessCoreField(string header, string value, EquipmentRecord record)
+    {
+        switch (header)
+        {
+            case "id":
+                record.id = value;
+                return true;
+            case "displayname":
+                record.displayName = value;
+                return true;
+            case "description":
+                record.description = value;
+                return true;
+            case "slot":
+                if (Enum.TryParse(value, true, out EquipmentSlot slot))
+                {
+                    record.slot = slot;
+                }
+                return true;
+            case "tags":
+                record.tags = value.Split(TagSeparators, StringSplitOptions.RemoveEmptyEntries);
+                return true;
+            case "iconresourcepath":
+                record.iconResourcePath = value;
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    private static void TryProcessStatField(string header, string rawValue, StatModifier modifier)
+    {
+        if (string.IsNullOrWhiteSpace(rawValue))
+            return;
+
+        string statId = header;
+        StatOperation operation = StatOperation.Default;
+
+        string[] parts = header.Split(':');
+        if (parts.Length > 1)
+        {
+            statId = parts[0];
+            if (Enum.TryParse(parts[1], true, out StatOperation parsedOp))
+            {
+                operation = parsedOp;
+            }
+        }
+
+        float value = ParseFloat(rawValue);
+        if (Mathf.Approximately(value, 0f))
+            return;
+
+        modifier.AddEntry(statId, value, operation);
     }
 
     private static float ParseFloat(string value)
