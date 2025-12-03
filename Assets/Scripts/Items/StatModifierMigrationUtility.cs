@@ -30,6 +30,8 @@ public static class StatModifierMigrationUtility
         changed |= ConsumeLegacy(ref modifier.dodgeChance, StatRegistry.StatIds.DodgeChance, modifier);
         changed |= ConsumeLegacy(ref modifier.xpGainMultiplier, StatRegistry.StatIds.XpGainMultiplier, modifier);
         changed |= ConsumeLegacy(ref modifier.cooldownReduction, StatRegistry.StatIds.CooldownReduction, modifier);
+        changed |= ConsumeLegacy(ref modifier.weaponDamageMin, StatRegistry.StatIds.WeaponDamageMin, modifier);
+        changed |= ConsumeLegacy(ref modifier.weaponDamageMax, StatRegistry.StatIds.WeaponDamageMax, modifier);
 
         return changed;
     }
@@ -54,6 +56,8 @@ public static class StatModifierMigrationUtility
         modifier.dodgeChance = 0f;
         modifier.xpGainMultiplier = 0f;
         modifier.cooldownReduction = 0f;
+        modifier.weaponDamageMin = 0f;
+        modifier.weaponDamageMax = 0f;
     }
 #pragma warning restore 618
 

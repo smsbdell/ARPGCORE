@@ -58,6 +58,8 @@ public class StatModifier : ISerializationCallbackReceiver
     [SerializeField, HideInInspector, Obsolete("Use entries instead")] internal float dodgeChance;
     [SerializeField, HideInInspector, Obsolete("Use entries instead")] internal float xpGainMultiplier;
     [SerializeField, HideInInspector, Obsolete("Use entries instead")] internal float cooldownReduction;
+    [SerializeField, HideInInspector, Obsolete("Use entries instead")] internal float weaponDamageMin;
+    [SerializeField, HideInInspector, Obsolete("Use entries instead")] internal float weaponDamageMax;
 #pragma warning restore 649
 
     public IReadOnlyList<StatEntry> Entries => entries;
