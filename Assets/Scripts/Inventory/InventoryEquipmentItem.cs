@@ -10,6 +10,12 @@ public class InventoryEquipmentItem : InventoryItem
     [Tooltip("Runtime equipment instance containing the rolled modifiers.")]
     public EquipmentItem equipment;
 
+    [Tooltip("Rarity used when determining how many affixes this item can roll.")]
+    public EquipmentRarity rarity = EquipmentRarity.Common;
+
+    [Tooltip("Level used when validating affix eligibility.")]
+    public int itemLevel = 1;
+
     [Tooltip("Affixes rolled onto this item at generation time.")]
     public List<AffixInstance> affixes = new List<AffixInstance>();
 
