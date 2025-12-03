@@ -38,7 +38,7 @@ public class StatRollRange
                 return;
         }
 
-        Debug.LogWarning($"StatRollRange: statId '{statId}' is not registered in StatRegistry.", this);
+        Debug.LogWarning($"StatRollRange: statId '{statId}' is not registered in StatRegistry.");
     }
 }
 
