@@ -1,0 +1,2 @@
+# List wildcard patterns (one per line) for member display names or file paths
+# to ignore in the C# usage audit. Lines starting with # are comments.
