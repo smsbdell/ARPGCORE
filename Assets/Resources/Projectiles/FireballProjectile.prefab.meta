@@ -2,6 +2,8 @@ fileFormatVersion: 2
 guid: b64d8b57dfc786548bcdf391cfd9faef
 PrefabImporter:
   externalObjects: {}
-  userData: 
-  assetBundleName: 
-  assetBundleVariant: 
+  userData:
+  assetBundleName:
+  assetBundleVariant:
+  assetLabels:
+  - shipping
