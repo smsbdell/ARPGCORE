@@ -4,7 +4,7 @@ using UnityEngine;
 
 [RequireComponent(typeof(CharacterStats))]
 [RequireComponent(typeof(AutoAttackController))]
-public class PlayerSkills : MonoBehaviour
+public class PlayerSkills : MonoBehaviour, IAbilityLevelProvider
 {
     private CharacterStats _stats;
     private AutoAttackController _autoAttack;
@@ -48,6 +48,11 @@ public class PlayerSkills : MonoBehaviour
         if (_activeLevels.TryGetValue(abilityId, out int level))
             return level;
         return 0;
+    }
+
+    public int GetAbilityLevel(string abilityId)
+    {
+        return GetActiveLevel(abilityId);
     }
 
     public void AddActiveSkill(string abilityId)
