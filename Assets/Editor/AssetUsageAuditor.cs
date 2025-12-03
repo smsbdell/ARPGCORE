@@ -15,6 +15,19 @@ public static class AssetUsageAuditor
         "/Gizmos/"
     };
 
+    private static readonly string[] IgnoredFileExtensions =
+    {
+        ".md",
+        ".txt",
+        ".csv",
+        ".json"
+    };
+
+    private static readonly string[] IgnoredExactPaths =
+    {
+        "Assets/HighChurnAssets.md"
+    };
+
     private static readonly string[] WhitelistedGuids = Array.Empty<string>();
 
     private static readonly string[] HighChurnRootPaths =
@@ -223,6 +236,16 @@ public static class AssetUsageAuditor
 
     private static bool IsIgnored(string path)
     {
+        if (IgnoredExactPaths.Any(ignored => path.Equals(ignored, StringComparison.OrdinalIgnoreCase)))
+        {
+            return true;
+        }
+
+        if (IgnoredFileExtensions.Any(extension => path.EndsWith(extension, StringComparison.OrdinalIgnoreCase)))
+        {
+            return true;
+        }
+
         return IgnoredPathFragments.Any(fragment => path.IndexOf(fragment, StringComparison.OrdinalIgnoreCase) >= 0);
     }
 
@@ -231,6 +254,8 @@ public static class AssetUsageAuditor
         var sb = new StringBuilder();
         sb.AppendLine($"Asset Usage Audit - {DateTime.UtcNow:u}");
         sb.AppendLine("Ignored path fragments: " + string.Join(", ", IgnoredPathFragments));
+        sb.AppendLine("Ignored file extensions: " + string.Join(", ", IgnoredFileExtensions));
+        sb.AppendLine("Ignored exact paths: " + (IgnoredExactPaths.Length == 0 ? "(none)" : string.Join(", ", IgnoredExactPaths)));
         sb.AppendLine("Whitelisted GUIDs: " + (WhitelistedGuids.Length == 0 ? "(none)" : string.Join(", ", WhitelistedGuids)));
         sb.AppendLine("Lifecycle labels: " + string.Join(", ", LifecycleLabels));
         sb.AppendLine();
@@ -300,6 +325,8 @@ public static class AssetUsageAuditor
         {
             generatedAtUtc = DateTime.UtcNow.ToString("o"),
             ignoredPathFragments = IgnoredPathFragments,
+            ignoredFileExtensions = IgnoredFileExtensions,
+            ignoredExactPaths = IgnoredExactPaths,
             whitelistedGuids = WhitelistedGuids,
             assets = results.Assets.Values.Select(ToJsonRecord).OrderBy(r => r.path).ToArray(),
             zeroReferenceAssets = results.ZeroReferenceAssets.Select(ToJsonRecord).ToArray(),
@@ -383,6 +410,8 @@ public static class AssetUsageAuditor
     {
         public string generatedAtUtc;
         public string[] ignoredPathFragments;
+        public string[] ignoredFileExtensions;
+        public string[] ignoredExactPaths;
         public string[] whitelistedGuids;
         public AuditJsonRecord[] assets;
         public AuditJsonRecord[] zeroReferenceAssets;
