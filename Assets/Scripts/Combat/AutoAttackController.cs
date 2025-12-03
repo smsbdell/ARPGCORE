@@ -196,8 +196,9 @@ public class AutoAttackController : MonoBehaviour
                         projDamage.direction = projDir;
 
                         projDamage.damageType = ability.damageType;
-                        projDamage.sourceAbilityId = ability.id;
                         projDamage.ownerCollider = _ownerCollider;
+
+                        projDamage.ConfigureAbilityContext(ability.id, level, _playerSkills, recomputeDamage: false);
                     }
 
                     Collider2D projCollider = projectile.GetComponent<Collider2D>();

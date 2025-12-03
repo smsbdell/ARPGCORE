@@ -40,6 +40,12 @@ public class ProjectileDamage : MonoBehaviour
     [Tooltip("Ability id that spawned this projectile.")]
     public string sourceAbilityId;
 
+    [Tooltip("Skill level of the ability that spawned this projectile.")]
+    public int abilityLevel = 1;
+
+    [NonSerialized]
+    public IAbilityLevelProvider abilityLevelProvider;
+
     [Tooltip("Collider of the owner (player, monster) so we can ignore it on collision.")]
     public Collider2D ownerCollider;
 
@@ -71,13 +77,14 @@ public class ProjectileDamage : MonoBehaviour
     {
         _rb = GetComponent<Rigidbody2D>();
         _resolvedEnemyMask = ResolveEnemyMask();
-        InitializeDamageFromAbility();
     }
 
     private void Start()
     {
         _lifeTimer = lifetime;
         _resolvedEnemyMask = ResolveEnemyMask();
+
+        InitializeDamageFromAbility();
     }
 
     private void Update()
@@ -106,6 +113,23 @@ public class ProjectileDamage : MonoBehaviour
         return monsterLayer >= 0 ? 1 << monsterLayer : 0;
     }
 
+    public void ConfigureAbilityContext(string abilityId, int level, IAbilityLevelProvider levelProvider, bool recomputeDamage = true)
+    {
+        sourceAbilityId = abilityId;
+        abilityLevel = level;
+        abilityLevelProvider = levelProvider;
+
+        if (recomputeDamage)
+        {
+            _damageInitialized = false;
+            InitializeDamageFromAbility();
+        }
+        else
+        {
+            _damageInitialized = true;
+        }
+    }
+
     private void InitializeDamageFromAbility()
     {
         if (_damageInitialized)
@@ -130,8 +154,12 @@ public class ProjectileDamage : MonoBehaviour
             ownerStats = ownerCollider.GetComponentInParent<CharacterStats>();
         }
 
-        // Determine skill level (if any system exposes GetAbilityLevel(string))
-        int skillLevel = GetAbilityLevelViaReflection(sourceAbilityId);
+        int skillLevel = abilityLevel;
+        if (skillLevel <= 0 && abilityLevelProvider != null)
+        {
+            skillLevel = abilityLevelProvider.GetAbilityLevel(sourceAbilityId);
+        }
+
         if (skillLevel <= 0)
             skillLevel = 1;
 
@@ -164,40 +192,6 @@ public class ProjectileDamage : MonoBehaviour
         damage = primaryDamage;
         secondaryDamage = secondary;
         damageType = ability.damageType;
-    }
-
-    /// <summary>
-    /// Looks for any MonoBehaviour in the scene that exposes int GetAbilityLevel(string abilityId).
-    /// This keeps ProjectileDamage decoupled from your concrete SkillSystem implementation.
-    /// </summary>
-    private int GetAbilityLevelViaReflection(string abilityId)
-    {
-        try
-        {
-            MonoBehaviour[] allMBs = FindObjectsOfType<MonoBehaviour>();
-            for (int i = 0; i < allMBs.Length; i++)
-            {
-                var mb = allMBs[i];
-                if (mb == null) continue;
-
-                var type = mb.GetType();
-                var method = type.GetMethod("GetAbilityLevel", new Type[] { typeof(string) });
-                if (method == null)
-                    continue;
-
-                object result = method.Invoke(mb, new object[] { abilityId });
-                if (result is int level && level > 0)
-                {
-                    return level;
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            Debug.LogWarning($"ProjectileDamage: error trying to get ability level via reflection: {ex.Message}");
-        }
-
-        return 0;
     }
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -348,7 +342,8 @@ public class ProjectileDamage : MonoBehaviour
                 shardDamage.splitRemaining = 0;
                 shardDamage.allowSplitAndChain = false;
                 shardDamage.enemyLayerMask = enemyLayerMask;
-                shardDamage.sourceAbilityId = sourceAbilityId;
+
+                shardDamage.ConfigureAbilityContext(sourceAbilityId, abilityLevel, abilityLevelProvider, recomputeDamage: false);
             }
 
             Collider2D shardCollider = shard.GetComponent<Collider2D>();
@@ -478,13 +473,14 @@ public class ProjectileDamage : MonoBehaviour
             cloneDamage.damageType = damageType;
             cloneDamage.direction = dir;
             cloneDamage.projectileSpeed = projectileSpeed;
-            cloneDamage.sourceAbilityId = sourceAbilityId;
             cloneDamage.ownerCollider = ownerCollider;
             cloneDamage.chainRemaining = Mathf.Max(0, chainCount);
             cloneDamage.splitRemaining = Mathf.Max(0, splitCount);
             cloneDamage.allowSplitAndChain = allowSplitAndChain;
             cloneDamage.enemyLayerMask = enemyLayerMask;
             cloneDamage._resolvedEnemyMask = _resolvedEnemyMask;
+
+            cloneDamage.ConfigureAbilityContext(sourceAbilityId, abilityLevel, abilityLevelProvider, recomputeDamage: false);
         }
 
         Collider2D cloneCollider = clone.GetComponent<Collider2D>();
