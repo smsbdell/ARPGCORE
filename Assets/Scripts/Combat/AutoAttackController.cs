@@ -117,29 +117,31 @@ public class AutoAttackController : MonoBehaviour
 
         float scalingPerLevel = ability.levelScalingPerLevel > 0f ? ability.levelScalingPerLevel : 0.25f;
         float levelMultiplier = 1f + (level - 1) * scalingPerLevel;
-        float baseDamage = ability.baseDamage;
+        float primaryBaseDamage = ability.baseDamage;
 
         if (_stats != null)
         {
             if (ability.usesWeaponDamage)
             {
-                baseDamage = _stats.GetRandomWeaponDamage() * ability.weaponDamageMultiplier;
+                primaryBaseDamage = _stats.GetRandomWeaponDamage() * ability.weaponDamageMultiplier;
             }
             else
             {
-                baseDamage += _stats.baseDamage;
+                primaryBaseDamage += _stats.baseDamage;
             }
         }
 
-        float damage = baseDamage * levelMultiplier;
+        float primaryDamage = primaryBaseDamage * levelMultiplier;
+        float secondaryDamage = ability.baseDamage * levelMultiplier;
 
-        bool isCrit = Random.value < _stats.critChance;
-        if (isCrit)
+        bool isCrit = _stats != null && Random.value < _stats.critChance;
+        if (isCrit && _stats != null)
         {
-            damage *= _stats.critMultiplier;
+            primaryDamage *= _stats.critMultiplier;
+            secondaryDamage *= _stats.critMultiplier;
         }
 
-        Debug.Log($"Casting ability: {ability.displayName} (Lv {level}) for {damage} damage (crit: {isCrit})");
+        Debug.Log($"Casting ability: {ability.displayName} (Lv {level}) for {primaryDamage} damage (crit: {isCrit})");
 
         if (!string.IsNullOrEmpty(ability.projectilePrefabName))
         {
@@ -189,8 +191,8 @@ public class AutoAttackController : MonoBehaviour
                     ProjectileDamage projDamage = projectile.GetComponent<ProjectileDamage>();
                     if (projDamage != null)
                     {
-                        projDamage.damage = damage;
-                        projDamage.secondaryDamage = damage;
+                        projDamage.damage = primaryDamage;
+                        projDamage.secondaryDamage = secondaryDamage;
                         projDamage.splitRemaining = splitCount;
                         projDamage.chainRemaining = chainCount;
                         projDamage.projectileSpeed = ability.projectileSpeed;
