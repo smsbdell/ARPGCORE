@@ -1,0 +1,149 @@
+name: Asset Usage Audit
+
+on:
+  pull_request:
+    paths:
+      - 'Assets/**'
+      - 'ProjectSettings/**'
+      - 'Packages/**'
+      - 'Tools/CI/**'
+      - '.github/workflows/asset-usage-audit.yml'
+      - '.github/asset-audit-whitelist.txt'
+  push:
+    branches:
+      - main
+    paths:
+      - 'Assets/**'
+      - 'ProjectSettings/**'
+      - 'Packages/**'
+      - 'Tools/CI/**'
+      - '.github/workflows/asset-usage-audit.yml'
+      - '.github/asset-audit-whitelist.txt'
+
+env:
+  UNITY_VERSION: 6000.1.12f1
+  AUDIT_REPORT_DIR: Logs/asset_audits
+  AUDIT_LOG_PATH: Logs/asset_audit.log
+  AUDIT_ARTIFACT_NAME: asset-usage-audit
+  AUDIT_WARN_ONLY: "false"
+
+jobs:
+  audit:
+    name: Run asset auditor
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      actions: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Cache Unity Library
+        uses: actions/cache@v4
+        with:
+          path: Library
+          key: Library-${{ env.UNITY_VERSION }}-${{ hashFiles('Packages/manifest.json') }}
+          restore-keys: |
+            Library-${{ env.UNITY_VERSION }}-
+
+      - name: Run Asset Usage Auditor
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+        run: |
+          set -euxo pipefail
+          docker run \
+            --rm \
+            -u $(id -u):$(id -g) \
+            -e UNITY_LICENSE \
+            -v "${{ github.workspace }}":/project \
+            -w /project \
+            unityci/editor:${UNITY_VERSION}-base-3 \
+            unity-editor -quit -batchmode -nographics -projectPath /project \
+              -executeMethod AssetUsageAuditor.RunAuditFromBatch \
+              -logFile /project/${AUDIT_LOG_PATH}
+
+      - name: Locate audit outputs
+        id: audit_files
+        run: |
+          set -euxo pipefail
+          latest_json=$(ls -1 ${AUDIT_REPORT_DIR}/asset_audit_*.json | sort | tail -n 1)
+          latest_txt=$(ls -1 ${AUDIT_REPORT_DIR}/asset_audit_*.txt | sort | tail -n 1)
+          latest_csv=$(ls -1 ${AUDIT_REPORT_DIR}/asset_audit_*.csv | sort | tail -n 1)
+          echo "json=${latest_json}" >> "$GITHUB_OUTPUT"
+          echo "text=${latest_txt}" >> "$GITHUB_OUTPUT"
+          echo "csv=${latest_csv}" >> "$GITHUB_OUTPUT"
+
+      - name: Capture changed files
+        id: changes
+        run: |
+          set -euo pipefail
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            git fetch origin ${{ github.event.pull_request.base.ref }} --depth=1
+            git diff --name-only origin/${{ github.event.pull_request.base.sha }}...HEAD > /tmp/changed_files.txt
+          else
+            git diff --name-only HEAD^ HEAD > /tmp/changed_files.txt || true
+          fi
+          echo "file=/tmp/changed_files.txt" >> "$GITHUB_OUTPUT"
+
+      - name: Analyze audit delta
+        id: audit_delta
+        run: |
+          set -euxo pipefail
+          python3 Tools/CI/analyze_asset_audit.py \
+            --audit-json "${{ steps.audit_files.outputs.json }}" \
+            --changed-files "${{ steps.changes.outputs.file }}" \
+            --whitelist .github/asset-audit-whitelist.txt \
+            --summary-markdown "${AUDIT_REPORT_DIR}/asset_audit_summary.md" \
+            --summary-json "${AUDIT_REPORT_DIR}/asset_audit_summary.json" \
+            --github-output "$GITHUB_OUTPUT"
+
+      - name: Upload audit artifacts
+        id: upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.AUDIT_ARTIFACT_NAME }}
+          path: |
+            ${{ env.AUDIT_LOG_PATH }}
+            ${{ env.AUDIT_REPORT_DIR }}/asset_audit_*.txt
+            ${{ env.AUDIT_REPORT_DIR }}/asset_audit_*.json
+            ${{ env.AUDIT_REPORT_DIR }}/asset_audit_*.csv
+            ${{ env.AUDIT_REPORT_DIR }}/asset_audit_summary.*
+
+      - name: Post PR comment
+        if: ${{ github.event_name == 'pull_request' }}
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+            const summaryPath = '${{ steps.audit_delta.outputs.summary_markdown }}';
+            const summary = fs.readFileSync(summaryPath, 'utf8');
+            const artifactUrl = '${{ steps.upload.outputs.artifact-url }}';
+            const marker = '<!-- asset-usage-audit -->';
+            const body = `${marker}\n${summary}\n📎 [Download full asset audit artifacts](${artifactUrl})`;
+            const { owner, repo } = context.repo;
+            const issue_number = context.issue.number;
+            const existing = (await github.rest.issues.listComments({ owner, repo, issue_number, per_page: 100 })).data
+              .find(comment => comment.body && comment.body.includes(marker));
+
+            if (existing) {
+              await github.rest.issues.updateComment({ owner, repo, comment_id: existing.id, body });
+            } else {
+              await github.rest.issues.createComment({ owner, repo, issue_number, body });
+            }
+
+      - name: Publish job summary
+        run: |
+          {
+            cat "${{ steps.audit_delta.outputs.summary_markdown }}";
+            echo "\n📎 [Download full asset audit artifacts](${{ steps.upload.outputs.artifact-url }})";
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Enforce unused-asset policy
+        if: ${{ env.AUDIT_WARN_ONLY != 'true' && steps.audit_delta.outputs.new_unused_count != '' && steps.audit_delta.outputs.new_unused_count != '0' }}
+        run: |
+          echo "New unused assets detected outside the whitelist. See the artifact for details." >&2
+          exit 1
