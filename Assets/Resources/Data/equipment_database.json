@@ -50,6 +50,23 @@
       }
     },
     {
+      "id": "test_bow_mainhand",
+      "displayName": "Test Bow",
+      "description": "A simple bow for testing projectile builds.",
+      "slot": "MainHand",
+      "tags": ["bow", "projectile", "ranged"],
+      "iconResourcePath": "",
+      "modifiers": {
+        "baseDamage": 5,
+        "critChance": 0.05,
+        "critMultiplier": 0.5,
+        "attackSpeedMultiplier": 0.2,
+        "projectileCount": 1,
+        "projectileSpreadAngle": 10,
+        "weaponAttackSpeed": 0.0
+      }
+    },
+    {
       "id": "weapon_practice_dagger",
       "displayName": "Practice Dagger",
       "description": "Light off-hand blade suited for quick strikes.",

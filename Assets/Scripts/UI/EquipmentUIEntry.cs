@@ -7,23 +7,27 @@ public class EquipmentItemUIEntry : MonoBehaviour
     public Image iconImage;
     public TMP_Text nameText;
 
-    private EquipmentItem _item;
+    private InventoryEquipmentItem _item;
     private EquipmentUI _owner;
 
-    public void Init(EquipmentItem item, EquipmentUI owner)
+    public void Init(InventoryEquipmentItem item, EquipmentUI owner)
     {
         _item = item;
         _owner = owner;
 
+        EquipmentItem equipment = item != null ? item.equipment : null;
+        Sprite sprite = equipment != null ? equipment.icon : item?.icon;
+
         if (iconImage != null)
         {
-            iconImage.sprite = item.icon;
-            iconImage.enabled = (item.icon != null);
+            iconImage.sprite = sprite;
+            iconImage.enabled = (sprite != null);
         }
 
         if (nameText != null)
         {
-            nameText.text = item.displayName;
+            string displayName = equipment != null ? equipment.displayName : item?.displayName;
+            nameText.text = string.IsNullOrWhiteSpace(displayName) ? "Unnamed" : displayName;
         }
 
         Button btn = GetComponent<Button>();

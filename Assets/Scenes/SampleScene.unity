@@ -3431,7 +3431,7 @@ MonoBehaviour:
   ring8: {fileID: 0}
   ring9: {fileID: 0}
   ring10: {fileID: 0}
-  mainHand: {fileID: 11400000, guid: 7469d8282cfcf0c4b9d32a22e5237201, type: 2}
+  mainHand: {fileID: 0}
   offHand: {fileID: 0}
   boots: {fileID: 0}
   gloves: {fileID: 0}
@@ -4472,11 +4472,17 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2ec010a54bd487a4487ad578081e19ae, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier:
   panelRoot: {fileID: 188774246}
   playerEquipment: {fileID: 608403058}
-  availableItems:
-  - {fileID: 11400000, guid: 7469d8282cfcf0c4b9d32a22e5237201, type: 2}
+  inventory: {fileID: 384900544}
+  itemGenerator: {fileID: 0}
+  currencyActionsUI: {fileID: 0}
+  fallbackItems: []
+  starterItemIds:
+  - test_bow_mainhand
+  starterItemLevel: 1
+  starterRarity: 1
   itemListParent: {fileID: 281787900}
   itemEntryPrefab: {fileID: 471423250139717515, guid: 6c33b13792c05174aab63a22084136e1, type: 3}
   slotUIs:

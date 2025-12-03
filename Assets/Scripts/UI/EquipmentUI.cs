@@ -21,12 +21,21 @@ public class EquipmentUI : MonoBehaviour
 
     [Header("References")]
     public PlayerEquipment playerEquipment;
+    [SerializeField] private Inventory inventory;
+    [SerializeField] private ItemGenerator itemGenerator;
+    [SerializeField] private EquipmentCurrencyActionsUI currencyActionsUI;
 
     [Header("Data Source")]
-    [Tooltip("Equipment database used to populate the UI at runtime.")]
-    public EquipmentDatabase database;
     [Tooltip("Fallback list for testing without a database asset.")]
     public List<EquipmentItem> fallbackItems = new List<EquipmentItem>();
+
+    [Header("Generation")]
+    [Tooltip("Base item ids to roll when the inventory does not have any equipment yet.")]
+    public List<string> starterItemIds = new List<string> { "test_bow_mainhand" };
+    [Tooltip("Item level used when rolling starter gear.")]
+    public int starterItemLevel = 1;
+    [Tooltip("Rarity used when rolling starter gear.")]
+    public EquipmentRarity starterRarity = EquipmentRarity.Magic;
 
     [Header("Item List UI")]
     public Transform itemListParent;
@@ -39,7 +48,9 @@ public class EquipmentUI : MonoBehaviour
     [Tooltip("Whether the equipment panel should start visible when the game runs.")]
     public bool startVisible = false;
 
-    private EquipmentItem _selectedItem;
+    private EquipmentDatabase _database;
+    private EquipmentItem _selectedEquipment;
+    private InventoryEquipmentItem _selectedItem;
     private bool _isVisible;
 
     private void Awake()
@@ -65,9 +76,14 @@ public class EquipmentUI : MonoBehaviour
             }
         }
 
-        EnsureDatabase();
+        if (inventory == null)
+            inventory = Inventory.Instance;
+
+        EnsureItemGenerator();
+        EnsureInventoryHasEquipment();
         BuildItemList();
         HookUpSlotButtons();
+        AutoEquipEmptySlots();
         RefreshSlots();
     }
 
@@ -104,7 +120,7 @@ public class EquipmentUI : MonoBehaviour
             Destroy(itemListParent.GetChild(i).gameObject);
         }
 
-        foreach (EquipmentItem item in GetAvailableItems())
+        foreach (InventoryEquipmentItem item in GetAvailableItems())
         {
             if (item == null)
                 continue;
@@ -127,46 +143,154 @@ public class EquipmentUI : MonoBehaviour
         }
     }
 
-    private void EnsureDatabase()
+    private void EnsureItemGenerator()
     {
-        if (database != null)
+        if (itemGenerator == null)
+            itemGenerator = FindObjectOfType<ItemGenerator>();
+
+        if (itemGenerator == null)
+        {
+            GameObject generatorObj = new GameObject("ItemGenerator");
+            itemGenerator = generatorObj.AddComponent<ItemGenerator>();
+        }
+
+        if (_database == null && itemGenerator != null && itemGenerator.equipmentDatabase != null)
+            _database = itemGenerator.equipmentDatabase;
+
+        if (_database == null)
+        {
+            TextAsset data = Resources.Load<TextAsset>("Data/equipment_database");
+            if (data != null)
+            {
+                _database = ScriptableObject.CreateInstance<EquipmentDatabase>();
+                _database.dataFile = data;
+            }
+        }
+
+        if (itemGenerator != null && itemGenerator.equipmentDatabase == null)
+            itemGenerator.equipmentDatabase = _database;
+    }
+
+    private void EnsureInventoryHasEquipment()
+    {
+        if (inventory == null)
             return;
 
-        TextAsset data = Resources.Load<TextAsset>("Data/equipment_database");
-        if (data != null)
+        List<InventoryEquipmentItem> inventoryItems = GetInventoryEquipmentItems();
+        if (inventoryItems.Count > 0)
+            return;
+
+        if (itemGenerator != null)
         {
-            database = ScriptableObject.CreateInstance<EquipmentDatabase>();
-            database.dataFile = data;
+            foreach (string baseItemId in starterItemIds)
+            {
+                if (string.IsNullOrWhiteSpace(baseItemId))
+                    continue;
+
+                InventoryEquipmentItem generated = itemGenerator.Generate(baseItemId, starterItemLevel, starterRarity);
+                if (generated == null)
+                    continue;
+
+                inventory.AddItem(generated);
+            }
+        }
+
+        if (GetInventoryEquipmentItems().Count == 0 && fallbackItems.Count > 0)
+        {
+            foreach (EquipmentItem fallback in fallbackItems)
+            {
+                InventoryEquipmentItem wrapped = WrapFallbackItem(fallback);
+                if (wrapped == null)
+                    continue;
+
+                inventory.AddItem(wrapped);
+            }
         }
     }
 
-    private IEnumerable<EquipmentItem> GetAvailableItems()
+    private List<InventoryEquipmentItem> GetAvailableItems()
     {
-        if (database != null)
+        List<InventoryEquipmentItem> items = GetInventoryEquipmentItems();
+
+        if (items.Count == 0 && fallbackItems.Count > 0 && inventory != null)
         {
-            return database.Items;
+            foreach (EquipmentItem fallback in fallbackItems)
+            {
+                InventoryEquipmentItem wrapped = WrapFallbackItem(fallback);
+                if (wrapped == null)
+                    continue;
+
+                if (inventory.AddItem(wrapped))
+                {
+                    if (inventory.items[inventory.items.Count - 1] is InventoryEquipmentItem added)
+                        items.Add(added);
+                }
+            }
         }
 
-        return fallbackItems;
+        return items;
     }
 
-    public void OnItemSelected(EquipmentItem item)
+    private List<InventoryEquipmentItem> GetInventoryEquipmentItems()
+    {
+        List<InventoryEquipmentItem> items = new List<InventoryEquipmentItem>();
+
+        if (inventory == null || inventory.items == null)
+            return items;
+
+        foreach (InventoryItem item in inventory.items)
+        {
+            if (item is InventoryEquipmentItem equipmentItem && equipmentItem.equipment != null)
+            {
+                items.Add(equipmentItem);
+            }
+        }
+
+        return items;
+    }
+
+    private InventoryEquipmentItem WrapFallbackItem(EquipmentItem fallback)
+    {
+        if (fallback == null)
+            return null;
+
+        return new InventoryEquipmentItem
+        {
+            equipmentId = fallback.id,
+            equipment = fallback,
+            rarity = EquipmentRarity.Common,
+            itemLevel = 1,
+            itemId = fallback.id,
+            displayName = fallback.displayName,
+            description = fallback.description,
+            icon = fallback.icon,
+            isStackable = false,
+            maxStack = 1,
+            currentStack = 1
+        };
+    }
+
+    public void OnItemSelected(InventoryEquipmentItem item)
     {
         _selectedItem = item;
+        _selectedEquipment = item != null ? item.equipment : null;
+
+        if (currencyActionsUI != null)
+            currencyActionsUI.BindTarget(item);
         // Optional: add highlight behavior here.
     }
 
     private void OnSlotClicked(EquipmentSlot slot)
     {
-        if (_selectedItem == null)
+        if (_selectedEquipment == null)
         {
             Debug.Log("EquipmentUI: No item selected to equip.");
             return;
         }
 
-        if (_selectedItem.slot != slot)
+        if (_selectedEquipment.slot != slot)
         {
-            Debug.Log($"EquipmentUI: '{_selectedItem.displayName}' cannot go into slot '{slot}'. It belongs to '{_selectedItem.slot}'.");
+            Debug.Log($"EquipmentUI: '{_selectedEquipment.displayName}' cannot go into slot '{slot}'. It belongs to '{_selectedEquipment.slot}'.");
             return;
         }
 
@@ -176,8 +300,26 @@ public class EquipmentUI : MonoBehaviour
             return;
         }
 
-        playerEquipment.Equip(_selectedItem);
+        playerEquipment.Equip(_selectedEquipment);
         RefreshSlots();
+    }
+
+    private void AutoEquipEmptySlots()
+    {
+        if (playerEquipment == null)
+            return;
+
+        foreach (InventoryEquipmentItem item in GetInventoryEquipmentItems())
+        {
+            if (item == null || item.equipment == null)
+                continue;
+
+            EquipmentSlot slot = item.equipment.slot;
+            if (playerEquipment.GetEquipped(slot) == null)
+            {
+                playerEquipment.Equip(item.equipment);
+            }
+        }
     }
 
     public void RefreshSlots()
