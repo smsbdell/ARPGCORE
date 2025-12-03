@@ -64,6 +64,23 @@ public class StatModifier : ISerializationCallbackReceiver
 
     public IReadOnlyList<StatEntry> Entries => entries;
 
+    public StatModifier Clone()
+    {
+        StatModifier copy = new StatModifier();
+        if (entries != null)
+        {
+            foreach (StatEntry entry in entries)
+            {
+                if (entry == null)
+                    continue;
+
+                copy.AddEntry(entry.statId, entry.value, entry.operation);
+            }
+        }
+
+        return copy;
+    }
+
     public void AddEntry(string statId, float value, StatOperation operation = StatOperation.Default)
     {
         if (entries == null)

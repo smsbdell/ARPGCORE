@@ -48,16 +48,7 @@ public class Inventory : MonoBehaviour
             }
 
             int stackToCreate = Mathf.Min(newItem.currentStack, newItem.maxStack);
-            InventoryItem clone = new InventoryItem
-            {
-                itemId = newItem.itemId,
-                displayName = newItem.displayName,
-                description = newItem.description,
-                icon = newItem.icon,
-                isStackable = newItem.isStackable,
-                maxStack = newItem.maxStack,
-                currentStack = stackToCreate
-            };
+            InventoryItem clone = newItem.CloneForStack(stackToCreate);
 
             items.Add(clone);
             newItem.currentStack -= stackToCreate;
