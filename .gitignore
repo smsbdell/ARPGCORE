@@ -4,6 +4,7 @@
 [Oo]bj/
 [Bb]uild/
 logs/
+Logs/
 # Other common files to ignore
 *.csproj
 *.unityproj
