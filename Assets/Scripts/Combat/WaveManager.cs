@@ -49,7 +49,7 @@ public class WaveManager : MonoBehaviour
     private void Awake()
     {
         if (_monsterSpawner == null)
-            Debug.LogError("WaveManager requires a MonsterSpawner reference.");
+            Debug.LogWarning("WaveManager is missing a MonsterSpawner reference; configure it before starting waves.");
     }
 
     private void OnEnable()
@@ -67,8 +67,14 @@ public class WaveManager : MonoBehaviour
 
     public void StartWaves()
     {
-        if (_waveRoutine != null || _monsterSpawner == null)
+        if (_waveRoutine != null)
             return;
+
+        if (_monsterSpawner == null)
+        {
+            Debug.LogError("WaveManager cannot start waves because MonsterSpawner is not assigned.");
+            return;
+        }
 
         _waveRoutine = StartCoroutine(WaveLoop());
     }
@@ -178,5 +184,20 @@ public class WaveManager : MonoBehaviour
             StopCoroutine(_waveRoutine);
             _waveRoutine = null;
         }
+    }
+
+    public void ConfigureForRun(MonsterSpawner monsterSpawner, MonsterWaveScalingConfig waveScalingConfig, bool autoStartWaves)
+    {
+        _monsterSpawner = monsterSpawner;
+        _waveScalingConfig = waveScalingConfig;
+        _autoStart = autoStartWaves;
+    }
+
+    public void ResetProgress()
+    {
+        _currentWave = 0;
+        StopWaveRoutine();
+        _monsterSpawner?.SetSpawningEnabled(false);
+        _monsterSpawner?.DespawnAll();
     }
 }
