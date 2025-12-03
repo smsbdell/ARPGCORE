@@ -17,11 +17,28 @@ public class StatRollRange
     [Tooltip("Operation used when applying this stat. Default defers to StatRegistry configuration.")]
     public StatOperation operation = StatOperation.Default;
 
+    [Tooltip("Optional text payload for this roll (e.g., skill tag whitelist).")]
+    public string stringValue;
+
     public float Roll()
     {
         float low = Mathf.Min(minValue, maxValue);
         float high = Mathf.Max(minValue, maxValue);
         return UnityEngine.Random.Range(low, high);
+    }
+
+    private void OnValidate()
+    {
+        if (string.IsNullOrWhiteSpace(statId))
+            return;
+
+        foreach (string known in StatRegistry.KnownStatIds)
+        {
+            if (string.Equals(known, statId, StringComparison.Ordinal))
+                return;
+        }
+
+        Debug.LogWarning($"StatRollRange: statId '{statId}' is not registered in StatRegistry.", this);
     }
 }
 
@@ -105,7 +122,7 @@ public class AffixDefinition
                 continue;
 
             float value = roll.Roll();
-            instance.rolledStats.Add(new StatEntry(roll.statId, value, roll.operation));
+            instance.rolledStats.Add(new StatEntry(roll.statId, value, roll.operation, roll.stringValue));
         }
 
         return instance;
@@ -176,7 +193,7 @@ public class AffixInstance
                 if (entry == null)
                     continue;
 
-                clone.rolledStats.Add(new StatEntry(entry.statId, entry.value, entry.operation));
+                clone.rolledStats.Add(new StatEntry(entry.statId, entry.value, entry.operation, entry.stringValue));
             }
         }
 

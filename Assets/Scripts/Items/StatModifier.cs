@@ -11,14 +11,16 @@ public class StatEntry
     public string statId;
     public float value;
     public StatOperation operation = StatOperation.Default;
+    public string stringValue;
 
     public StatEntry() { }
 
-    public StatEntry(string statId, float value, StatOperation operation = StatOperation.Default)
+    public StatEntry(string statId, float value, StatOperation operation = StatOperation.Default, string stringValue = null)
     {
         this.statId = statId;
         this.value = value;
         this.operation = operation;
+        this.stringValue = stringValue;
     }
 }
 
@@ -74,19 +76,19 @@ public class StatModifier : ISerializationCallbackReceiver
                 if (entry == null)
                     continue;
 
-                copy.AddEntry(entry.statId, entry.value, entry.operation);
+                copy.AddEntry(entry.statId, entry.value, entry.operation, entry.stringValue);
             }
         }
 
         return copy;
     }
 
-    public void AddEntry(string statId, float value, StatOperation operation = StatOperation.Default)
+    public void AddEntry(string statId, float value, StatOperation operation = StatOperation.Default, string stringValue = null)
     {
         if (entries == null)
             entries = new List<StatEntry>();
 
-        entries.Add(new StatEntry(statId, value, operation));
+        entries.Add(new StatEntry(statId, value, operation, stringValue));
     }
 
     public void AddEntriesFrom(StatModifier other)
