@@ -18,6 +18,7 @@ public class MonsterSpawner : MonoBehaviour
     private readonly List<GameObject> _activeMonsters = new List<GameObject>();
     private readonly Queue<GameObject> _monsterPool = new Queue<GameObject>();
     private int _spawnsThisFrame;
+    private bool _spawningEnabled = true;
 
     private void Awake()
     {
@@ -27,6 +28,9 @@ public class MonsterSpawner : MonoBehaviour
     private void Update()
     {
         if (monsterPrefab == null || player == null || Camera.main == null)
+            return;
+
+        if (!_spawningEnabled)
             return;
 
         _spawnsThisFrame = 0;
@@ -108,6 +112,34 @@ public class MonsterSpawner : MonoBehaviour
 
         RegisterForPooling(monster);
         _monsterPool.Enqueue(monster);
+    }
+
+    public void SetSpawningEnabled(bool enabled)
+    {
+        _spawningEnabled = enabled;
+        _spawnTimer = Mathf.Min(spawnInterval, Mathf.Max(0f, _spawnTimer));
+    }
+
+    public void UpdateSpawnSettings(float interval, int maxMonstersCount)
+    {
+        spawnInterval = Mathf.Max(0.05f, interval);
+        maxMonsters = Mathf.Max(0, maxMonstersCount);
+        _spawnTimer = Mathf.Min(spawnInterval, Mathf.Max(0f, _spawnTimer));
+        PrewarmPool();
+    }
+
+    public void DespawnAll()
+    {
+        for (int i = _activeMonsters.Count - 1; i >= 0; i--)
+        {
+            GameObject monster = _activeMonsters[i];
+            RegisterForPooling(monster);
+            _monsterPool.Enqueue(monster);
+        }
+
+        _activeMonsters.Clear();
+        _spawnTimer = spawnInterval;
+        _spawnsThisFrame = 0;
     }
 
     private Vector3 GetSpawnPositionAroundPlayer()
