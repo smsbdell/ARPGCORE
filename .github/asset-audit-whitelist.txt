@@ -1,0 +1,4 @@
+# Glob patterns for asset paths that are allowed to remain unused without failing the audit.
+# Add project-specific directories (one per line) as needed, for example:
+# Assets/Prototypes/**
+# Assets/Experimental/**
