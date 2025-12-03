@@ -192,12 +192,15 @@ public static class AssetUsageAuditor
             .ThenBy(a => a.Path)
             .ToList();
 
+        var emptyAssetFolders = FindEmptyAssetFolders();
+
         return new AuditResults
         {
             Assets = assets,
             ZeroReferenceAssets = zeroReferenceAssets,
             UnlabeledHighChurnAssets = unlabeledHighChurnAssets,
-            StaleDeprecatedAssets = staleDeprecatedAssets
+            StaleDeprecatedAssets = staleDeprecatedAssets,
+            EmptyAssetFolders = emptyAssetFolders
         };
     }
 
@@ -289,10 +292,15 @@ public static class AssetUsageAuditor
         sb.AppendLine($"== Deprecated assets pending cleanup (>{DeprecatedRetentionDays}d) ({results.StaleDeprecatedAssets.Count}) ==");
         AppendFlatList(sb, results.StaleDeprecatedAssets);
 
+        sb.AppendLine();
+        sb.AppendLine($"== Empty asset folders ({results.EmptyAssetFolders.Count}) ==");
+        AppendPathList(sb, results.EmptyAssetFolders);
+
         sb.AppendLine($"Total assets scanned: {results.Assets.Count}");
         sb.AppendLine($"Zero-reference assets: {results.ZeroReferenceAssets.Count}");
         sb.AppendLine($"Unlabeled high-churn zero-reference assets: {results.UnlabeledHighChurnAssets.Count}");
         sb.AppendLine($"Deprecated assets pending cleanup: {results.StaleDeprecatedAssets.Count}");
+        sb.AppendLine($"Empty asset folders: {results.EmptyAssetFolders.Count}");
         return sb.ToString();
     }
 
@@ -333,7 +341,8 @@ public static class AssetUsageAuditor
             assets = results.Assets.Values.Select(ToJsonRecord).OrderBy(r => r.path).ToArray(),
             zeroReferenceAssets = results.ZeroReferenceAssets.Select(ToJsonRecord).ToArray(),
             unlabeledHighChurnAssets = results.UnlabeledHighChurnAssets.Select(ToJsonRecord).ToArray(),
-            staleDeprecatedAssets = results.StaleDeprecatedAssets.Select(ToJsonRecord).ToArray()
+            staleDeprecatedAssets = results.StaleDeprecatedAssets.Select(ToJsonRecord).ToArray(),
+            emptyAssetFolders = results.EmptyAssetFolders.ToArray()
         };
 
         return JsonUtility.ToJson(jsonPayload, true);
@@ -369,6 +378,14 @@ public static class AssetUsageAuditor
             sb.AppendLine($"\"{asset.Category}\",\"{asset.Guid}\",\"{escapedPath}\",\"{asset.AssetTypeName}\",\"{labels}\",{asset.ReferencedBy.Count},\"{referencedBy}\",{asset.IsHighChurn.ToString().ToLowerInvariant()},{deprecatedFlag}");
         }
 
+        sb.AppendLine();
+        sb.AppendLine("EmptyAssetFolders");
+        foreach (var folder in results.EmptyAssetFolders)
+        {
+            var escapedFolder = folder.Replace("\"", "\"\"");
+            sb.AppendLine($"\"{escapedFolder}\"");
+        }
+
         return sb.ToString();
     }
 
@@ -381,6 +398,19 @@ public static class AssetUsageAuditor
         }
 
         if (!records.Any())
+        {
+            sb.AppendLine("(none)");
+        }
+    }
+
+    private static void AppendPathList(StringBuilder sb, IEnumerable<string> paths)
+    {
+        foreach (var path in paths.OrderBy(p => p, StringComparer.OrdinalIgnoreCase))
+        {
+            sb.AppendLine($"- {path}");
+        }
+
+        if (!paths.Any())
         {
             sb.AppendLine("(none)");
         }
@@ -405,6 +435,7 @@ public static class AssetUsageAuditor
         public List<AssetRecord> ZeroReferenceAssets;
         public List<AssetRecord> UnlabeledHighChurnAssets;
         public List<AssetRecord> StaleDeprecatedAssets;
+        public List<string> EmptyAssetFolders;
     }
 
     [Serializable]
@@ -419,6 +450,7 @@ public static class AssetUsageAuditor
         public AuditJsonRecord[] zeroReferenceAssets;
         public AuditJsonRecord[] unlabeledHighChurnAssets;
         public AuditJsonRecord[] staleDeprecatedAssets;
+        public string[] emptyAssetFolders;
     }
 
     [Serializable]
@@ -457,5 +489,49 @@ public static class AssetUsageAuditor
         var projectRoot = Path.GetFullPath(Path.Combine(Application.dataPath, ".."));
         var fullPath = Path.Combine(projectRoot, assetPath);
         return File.GetLastWriteTimeUtc(fullPath);
+    }
+
+    private static List<string> FindEmptyAssetFolders()
+    {
+        var projectRoot = Path.GetFullPath(Path.Combine(Application.dataPath, ".."));
+        var assetsRoot = Path.Combine(projectRoot, "Assets");
+
+        var directories = Directory.GetDirectories(assetsRoot, "*", SearchOption.AllDirectories)
+            .OrderByDescending(GetPathDepth)
+            .ToList();
+
+        var emptyDirectories = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+        foreach (var directory in directories)
+        {
+            var hasNonMetaFiles = Directory.EnumerateFiles(directory)
+                .Any(file => !file.EndsWith(".meta", StringComparison.OrdinalIgnoreCase));
+
+            var childDirectories = Directory.EnumerateDirectories(directory);
+            var hasNonEmptyChildren = childDirectories.Any(child => !emptyDirectories.Contains(child));
+
+            if (hasNonMetaFiles || hasNonEmptyChildren)
+            {
+                continue;
+            }
+
+            emptyDirectories.Add(directory);
+        }
+
+        return emptyDirectories
+            .Where(directory =>
+            {
+                var parent = Directory.GetParent(directory);
+                return parent == null || !emptyDirectories.Contains(parent.FullName);
+            })
+            .Select(directory => "Assets" + directory.Substring(assetsRoot.Length).Replace('\\', '/'))
+            .Where(path => !IsIgnored(path))
+            .OrderBy(path => path, StringComparer.OrdinalIgnoreCase)
+            .ToList();
+    }
+
+    private static int GetPathDepth(string path)
+    {
+        return path.Count(c => c == Path.DirectorySeparatorChar || c == Path.AltDirectorySeparatorChar);
     }
 }
