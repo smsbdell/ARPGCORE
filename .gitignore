@@ -5,6 +5,7 @@
 [Bb]uild/
 logs/
 Logs/
+Assets/Editor/
 # Other common files to ignore
 *.csproj
 *.unityproj
