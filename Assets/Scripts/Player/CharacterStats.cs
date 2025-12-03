@@ -113,6 +113,16 @@ public partial class CharacterStats : MonoBehaviour
         OnHealthChanged?.Invoke(currentHealth, maxHealth);
     }
 
+    /// <summary>
+    /// Fully restores health to maximum and notifies listeners.
+    /// Intended for pooling scenarios where characters are reused.
+    /// </summary>
+    public void ResetHealth()
+    {
+        currentHealth = maxHealth;
+        OnHealthChanged?.Invoke(currentHealth, maxHealth);
+    }
+
     private void Die()
     {
         OnDied?.Invoke();

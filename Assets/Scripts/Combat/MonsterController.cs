@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
@@ -16,6 +17,7 @@ public class MonsterController : MonoBehaviour
     private CharacterStats _stats;
     private Transform _target;
     private PlayerProgression _playerProgression;
+    private Action<MonsterController> _returnToPool;
     private float _nextDamageTime = 0f;
 
     private void Awake()
@@ -97,10 +99,29 @@ public class MonsterController : MonoBehaviour
         _playerProgression?.GainXP(xpReward);
     }
 
+    public void SetReturnToPool(Action<MonsterController> returnToPool)
+    {
+        _returnToPool = returnToPool;
+    }
+
+    public void ResetState()
+    {
+        _nextDamageTime = 0f;
+        _rb.linearVelocity = Vector2.zero;
+        _stats?.ResetHealth();
+    }
+
     private void HandleDeath()
     {
         OnDeath();
-        Destroy(gameObject);
+        if (_returnToPool != null)
+        {
+            _returnToPool(this);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
     }
 
     private void CachePlayerReferences()
