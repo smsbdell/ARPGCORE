@@ -173,7 +173,8 @@ public class ProjectileDamage : MonoBehaviour
         if (skillLevel <= 0)
             skillLevel = 1;
 
-        float skillMultiplier = 1f + (skillLevel - 1) * ability.levelScalingPerLevel;
+        float scalingPerLevel = ability.levelScalingPerLevel > 0f ? ability.levelScalingPerLevel : 0.25f;
+        float skillMultiplier = 1f + (skillLevel - 1) * scalingPerLevel;
 
         float primaryDamage;
         float secondary = 0f;
@@ -187,7 +188,7 @@ public class ProjectileDamage : MonoBehaviour
                 weaponRoll = ability.baseDamage;
             }
 
-            primaryDamage = weaponRoll * ability.weaponDamageMultiplier;
+            primaryDamage = weaponRoll * ability.weaponDamageMultiplier * skillMultiplier;
 
             // Secondary effects scale purely with ability baseDamage + skill level
             secondary = ability.baseDamage * skillMultiplier;
