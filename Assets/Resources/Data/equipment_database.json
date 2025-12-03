@@ -35,6 +35,32 @@
         "moveSpeed": 0.5,
         "dodgeChance": 0.02
       }
+    },
+    {
+      "id": "weapon_rusty_sword",
+      "displayName": "Rusty Sword",
+      "description": "An old blade that still cuts better than bare fists.",
+      "slot": "MainHand",
+      "tags": ["weapon", "starter"],
+      "iconResourcePath": "",
+      "modifiers": {
+        "weaponDamageMin": 6,
+        "weaponDamageMax": 12,
+        "weaponAttackSpeed": 0.05
+      }
+    },
+    {
+      "id": "weapon_practice_dagger",
+      "displayName": "Practice Dagger",
+      "description": "Light off-hand blade suited for quick strikes.",
+      "slot": "OffHand",
+      "tags": ["weapon", "starter"],
+      "iconResourcePath": "",
+      "modifiers": {
+        "weaponDamageMin": 3,
+        "weaponDamageMax": 7,
+        "cooldownReduction": 0.02
+      }
     }
   ]
 }

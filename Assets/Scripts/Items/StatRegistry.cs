@@ -25,6 +25,9 @@ public static class StatRegistry
         public const string DodgeChance = "dodgeChance";
         public const string XpGainMultiplier = "xpGainMultiplier";
         public const string CooldownReduction = "cooldownReduction";
+        public const string WeaponDamageMin = "weaponDamageMin";
+        public const string WeaponDamageMax = "weaponDamageMax";
+        public const string WeaponDamage = "weaponDamage";
     }
 
     private static readonly Dictionary<string, StatDefinition> Definitions = new Dictionary<string, StatDefinition>();
@@ -46,6 +49,9 @@ public static class StatRegistry
         Register(StatIds.DodgeChance, StatOperation.Add, (stats, value, op, sign) => ApplyToFloat(ref stats.dodgeChance, value, op, sign));
         Register(StatIds.XpGainMultiplier, StatOperation.Add, (stats, value, op, sign) => ApplyToFloat(ref stats.xpGainMultiplier, value, op, sign));
         Register(StatIds.CooldownReduction, StatOperation.Add, (stats, value, op, sign) => ApplyToFloat(ref stats.cooldownReduction, value, op, sign));
+        Register(StatIds.WeaponDamageMin, StatOperation.Add, (stats, value, op, sign) => ApplyToFloat(ref stats.weaponDamageMin, value, op, sign));
+        Register(StatIds.WeaponDamageMax, StatOperation.Add, (stats, value, op, sign) => ApplyToFloat(ref stats.weaponDamageMax, value, op, sign));
+        Register(StatIds.WeaponDamage, StatOperation.Add, ApplyToWeaponDamageRange);
     }
 
     public static IReadOnlyCollection<string> KnownStatIds => Definitions.Keys;
@@ -103,6 +109,12 @@ public static class StatRegistry
             factor = 0.0001f; // prevent divide-by-zero when removing
 
         return sign >= 0 ? factor : 1f / factor;
+    }
+
+    private static void ApplyToWeaponDamageRange(CharacterStats stats, float value, StatOperation operation, int sign)
+    {
+        ApplyToFloat(ref stats.weaponDamageMin, value, operation, sign);
+        ApplyToFloat(ref stats.weaponDamageMax, value, operation, sign);
     }
 
     private readonly struct StatDefinition
