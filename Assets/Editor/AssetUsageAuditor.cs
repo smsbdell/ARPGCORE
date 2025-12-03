@@ -68,11 +68,13 @@ public static class AssetUsageAuditor
         File.WriteAllText(jsonReportPath, BuildJsonReport(results));
         File.WriteAllText(csvReportPath, BuildCsvReport(results));
 
+        var unusedPreview = BuildUnusedPreview(results.ZeroReferenceAssets);
+
         Debug.Log(
             $"Asset usage audit complete. Zero-reference assets: {results.ZeroReferenceAssets.Count}. " +
             $"Unlabeled high-churn assets: {results.UnlabeledHighChurnAssets.Count}. " +
             $"Stale deprecated assets: {results.StaleDeprecatedAssets.Count}. " +
-            $"Reports written to {logDirectory}");
+            $"Reports written to {logDirectory}.\n" + unusedPreview);
     }
 
     private static string PrepareLogDirectory()
@@ -264,6 +266,31 @@ public static class AssetUsageAuditor
         sb.AppendLine($"Zero-reference assets: {results.ZeroReferenceAssets.Count}");
         sb.AppendLine($"Unlabeled high-churn assets: {results.UnlabeledHighChurnAssets.Count}");
         sb.AppendLine($"Deprecated assets pending cleanup: {results.StaleDeprecatedAssets.Count}");
+        return sb.ToString();
+    }
+
+    private static string BuildUnusedPreview(IReadOnlyCollection<AssetRecord> zeroReferenceAssets)
+    {
+        if (zeroReferenceAssets.Count == 0)
+        {
+            return "Unused assets: (none)";
+        }
+
+        const int previewLimit = 20;
+        var previewAssets = zeroReferenceAssets
+            .OrderBy(asset => asset.Path)
+            .Take(previewLimit)
+            .ToList();
+
+        var sb = new StringBuilder();
+        sb.Append("Unused assets: ");
+        sb.Append(string.Join(", ", previewAssets.Select(asset => asset.Path)));
+
+        if (zeroReferenceAssets.Count > previewLimit)
+        {
+            sb.Append($" (showing {previewLimit} of {zeroReferenceAssets.Count}, see detailed report for full list)");
+        }
+
         return sb.ToString();
     }
 
