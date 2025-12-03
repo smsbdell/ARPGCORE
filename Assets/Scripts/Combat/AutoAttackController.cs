@@ -115,7 +115,8 @@ public class AutoAttackController : MonoBehaviour
                 level = storedLevel;
         }
 
-        float levelMultiplier = 1f + (level - 1) * 0.25f;
+        float scalingPerLevel = ability.levelScalingPerLevel > 0f ? ability.levelScalingPerLevel : 0.25f;
+        float levelMultiplier = 1f + (level - 1) * scalingPerLevel;
         float baseDamage = ability.baseDamage;
 
         if (_stats != null)
