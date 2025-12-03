@@ -28,3 +28,4 @@
 
 ## Additional notes
 - Deeper AGENTS.md files refine or override these rules; always consult them for files in their scope.
+- Asset auditing protocols: follow the asset auditing steps outlined in scoped AGENTS.md files whenever you add, modify, or remove assets (especially under `Assets/StreamingAssets/`), and call out compliance in PR/testing notes.
