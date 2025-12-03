@@ -85,7 +85,7 @@ public static class AssetUsageAuditor
 
         Debug.Log(
             $"Asset usage audit complete. Zero-reference assets: {results.ZeroReferenceAssets.Count}. " +
-            $"Unlabeled high-churn assets: {results.UnlabeledHighChurnAssets.Count}. " +
+            $"Unlabeled high-churn zero-reference assets: {results.UnlabeledHighChurnAssets.Count}. " +
             $"Stale deprecated assets: {results.StaleDeprecatedAssets.Count}. " +
             $"Reports written to {logDirectory}.\n" + unusedPreview);
     }
@@ -107,7 +107,6 @@ public static class AssetUsageAuditor
             .ToList();
 
         var assets = new Dictionary<string, AssetRecord>();
-        var unlabeledHighChurnAssets = new List<AssetRecord>();
         var staleDeprecatedAssets = new List<AssetRecord>();
 
         foreach (var path in allPaths)
@@ -136,11 +135,6 @@ public static class AssetUsageAuditor
             };
 
             record.IsDeprecatedStale = IsDeprecatedAndBeyondRetention(record);
-
-            if (record.IsHighChurn && record.Labels.Length == 0)
-            {
-                unlabeledHighChurnAssets.Add(record);
-            }
 
             if (record.IsDeprecatedStale)
             {
@@ -186,6 +180,14 @@ public static class AssetUsageAuditor
         var zeroReferenceAssets = assets.Values
             .Where(a => a.ReferencedBy.Count == 0)
             .Where(a => !WhitelistedGuids.Contains(a.Guid))
+            .OrderBy(a => a.Category)
+            .ThenBy(a => a.Path)
+            .ToList();
+
+        // Only warn about unlabeled high-churn assets when they are unused; referenced assets are implicitly
+        // treated as shipping-ready and do not require explicit lifecycle labels to avoid noisy reports.
+        var unlabeledHighChurnAssets = assets.Values
+            .Where(a => a.IsHighChurn && a.Labels.Length == 0 && a.ReferencedBy.Count == 0)
             .OrderBy(a => a.Category)
             .ThenBy(a => a.Path)
             .ToList();
@@ -280,7 +282,7 @@ public static class AssetUsageAuditor
             sb.AppendLine();
         }
 
-        sb.AppendLine($"== Unlabeled high-churn assets ({results.UnlabeledHighChurnAssets.Count}) ==");
+        sb.AppendLine($"== Unlabeled high-churn zero-reference assets ({results.UnlabeledHighChurnAssets.Count}) ==");
         AppendFlatList(sb, results.UnlabeledHighChurnAssets);
 
         sb.AppendLine();
@@ -289,7 +291,7 @@ public static class AssetUsageAuditor
 
         sb.AppendLine($"Total assets scanned: {results.Assets.Count}");
         sb.AppendLine($"Zero-reference assets: {results.ZeroReferenceAssets.Count}");
-        sb.AppendLine($"Unlabeled high-churn assets: {results.UnlabeledHighChurnAssets.Count}");
+        sb.AppendLine($"Unlabeled high-churn zero-reference assets: {results.UnlabeledHighChurnAssets.Count}");
         sb.AppendLine($"Deprecated assets pending cleanup: {results.StaleDeprecatedAssets.Count}");
         return sb.ToString();
     }
