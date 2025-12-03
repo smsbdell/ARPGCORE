@@ -72,10 +72,20 @@ public class ProjectileDamage : MonoBehaviour
     private float _lifeTimer;
     private Rigidbody2D _rb;
     private int _resolvedEnemyMask;
+    private PooledObject _pooledObject;
+    private bool _pendingRelease;
 
     private void Awake()
     {
         _rb = GetComponent<Rigidbody2D>();
+        _resolvedEnemyMask = ResolveEnemyMask();
+        _pooledObject = GetComponent<PooledObject>();
+    }
+
+    private void OnEnable()
+    {
+        _lifeTimer = lifetime;
+        _pendingRelease = false;
         _resolvedEnemyMask = ResolveEnemyMask();
     }
 
@@ -99,7 +109,7 @@ public class ProjectileDamage : MonoBehaviour
             _lifeTimer -= Time.deltaTime;
             if (_lifeTimer <= 0f)
             {
-                Destroy(gameObject);
+                ReleaseProjectile();
             }
         }
     }
@@ -222,7 +232,7 @@ public class ProjectileDamage : MonoBehaviour
             HandleSplitAndChain(other, targetStats);
         }
 
-        Destroy(gameObject);
+        ReleaseProjectile();
     }
 
     #region Secondary Effects (per-ability special logic)
@@ -275,10 +285,18 @@ public class ProjectileDamage : MonoBehaviour
 
             if (lightningStrikePrefab != null)
             {
-                GameObject strike = Instantiate(lightningStrikePrefab, h.transform.position, Quaternion.identity);
-                if (lightningStrikeLifetime > 0f)
+                GameObject strike = GameObjectPool.Get(lightningStrikePrefab, h.transform.position, Quaternion.identity);
+                if (strike != null && lightningStrikeLifetime > 0f)
                 {
-                    Destroy(strike, lightningStrikeLifetime);
+                    PooledObject pooledStrike = strike.GetComponent<PooledObject>();
+                    if (pooledStrike != null)
+                    {
+                        pooledStrike.ReleaseAfter(lightningStrikeLifetime);
+                    }
+                    else
+                    {
+                        Destroy(strike, lightningStrikeLifetime);
+                    }
                 }
             }
 
@@ -328,7 +346,7 @@ public class ProjectileDamage : MonoBehaviour
             Vector2 shardDir = Quaternion.Euler(0f, 0f, angle) * baseDir;
 
             Vector3 spawnPos = hitCollider.transform.position + (Vector3)(shardDir * 0.2f);
-            GameObject shard = Instantiate(iceShardProjectilePrefab, spawnPos, Quaternion.identity);
+            GameObject shard = GameObjectPool.Get(iceShardProjectilePrefab, spawnPos, Quaternion.identity);
             ProjectileDamage shardDamage = shard.GetComponent<ProjectileDamage>();
             if (shardDamage != null)
             {
@@ -463,7 +481,8 @@ public class ProjectileDamage : MonoBehaviour
 
     private ProjectileDamage SpawnFollowUpProjectile(Vector2 spawnPosition, Vector2 dir, int chainCount, int splitCount, Collider2D ignoreCollider, List<Collider2D> ignoreList)
     {
-        GameObject clone = Instantiate(gameObject, spawnPosition, Quaternion.identity);
+        GameObject prefab = _pooledObject != null ? _pooledObject.Prefab : gameObject;
+        GameObject clone = GameObjectPool.Get(prefab, spawnPosition, Quaternion.identity);
 
         ProjectileDamage cloneDamage = clone.GetComponent<ProjectileDamage>();
         if (cloneDamage != null)
@@ -524,6 +543,23 @@ public class ProjectileDamage : MonoBehaviour
         clone.transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
 
         return cloneDamage;
+    }
+
+    private void ReleaseProjectile()
+    {
+        if (_pendingRelease)
+            return;
+
+        _pendingRelease = true;
+
+        if (_pooledObject != null)
+        {
+            _pooledObject.Release();
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
     }
 
     private void OnDrawGizmosSelected()

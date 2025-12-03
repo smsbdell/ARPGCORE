@@ -183,7 +183,7 @@ public class AutoAttackController : MonoBehaviour
                         projDir = RotateVector(baseDirection, offset);
                     }
 
-                    GameObject projectile = Object.Instantiate(prefab, transform.position, Quaternion.identity);
+                    GameObject projectile = GameObjectPool.Get(prefab, transform.position, Quaternion.identity);
 
                     ProjectileDamage projDamage = projectile.GetComponent<ProjectileDamage>();
                     if (projDamage != null)
@@ -233,7 +233,15 @@ public class AutoAttackController : MonoBehaviour
 
                     if (ability.duration > 0f)
                     {
-                        Object.Destroy(projectile, ability.duration);
+                        PooledObject pooled = projectile.GetComponent<PooledObject>();
+                        if (pooled != null)
+                        {
+                            pooled.ReleaseAfter(ability.duration);
+                        }
+                        else
+                        {
+                            Object.Destroy(projectile, ability.duration);
+                        }
                     }
                 }
             }
