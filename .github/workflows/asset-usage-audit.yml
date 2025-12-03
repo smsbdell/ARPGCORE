@@ -9,6 +9,7 @@ on:
       - 'Tools/CI/**'
       - '.github/workflows/asset-usage-audit.yml'
       - '.github/asset-audit-whitelist.txt'
+      - '.github/legacy-member-whitelist.txt'
   push:
     branches:
       - main
@@ -19,6 +20,7 @@ on:
       - 'Tools/CI/**'
       - '.github/workflows/asset-usage-audit.yml'
       - '.github/asset-audit-whitelist.txt'
+      - '.github/legacy-member-whitelist.txt'
 
 env:
   UNITY_VERSION: 6000.1.12f1
@@ -26,6 +28,8 @@ env:
   AUDIT_LOG_PATH: Logs/asset_audit.log
   AUDIT_ARTIFACT_NAME: asset-usage-audit
   AUDIT_WARN_ONLY: "false"
+  LEGACY_WARN_ONLY: "false"
+  LEGACY_WHITELIST: .github/legacy-member-whitelist.txt
 
 jobs:
   audit:
@@ -100,6 +104,24 @@ jobs:
             --summary-json "${AUDIT_REPORT_DIR}/asset_audit_summary.json" \
             --github-output "$GITHUB_OUTPUT"
 
+      - name: Install dotnet-script
+        run: |
+          set -euxo pipefail
+          dotnet tool update -g dotnet-script || dotnet tool install -g dotnet-script
+          echo "$HOME/.dotnet/tools" >> "$GITHUB_PATH"
+
+      - name: Analyze C# usage
+        id: csharp_usage
+        run: |
+          set -euxo pipefail
+          dotnet-script Tools/CI/analyze_csharp_usage.csx \
+            --project-root . \
+            --changed-files "${{ steps.changes.outputs.file }}" \
+            --summary-markdown "${AUDIT_REPORT_DIR}/csharp_usage_summary.md" \
+            --summary-json "${AUDIT_REPORT_DIR}/csharp_usage_summary.json" \
+            --github-output "$GITHUB_OUTPUT" \
+            --whitelist "${LEGACY_WHITELIST}"
+
       - name: Upload audit artifacts
         id: upload
         uses: actions/upload-artifact@v4
@@ -111,6 +133,7 @@ jobs:
             ${{ env.AUDIT_REPORT_DIR }}/asset_audit_*.json
             ${{ env.AUDIT_REPORT_DIR }}/asset_audit_*.csv
             ${{ env.AUDIT_REPORT_DIR }}/asset_audit_summary.*
+            ${{ env.AUDIT_REPORT_DIR }}/csharp_usage_summary.*
 
       - name: Post PR comment
         if: ${{ github.event_name == 'pull_request' }}
@@ -120,7 +143,10 @@ jobs:
           script: |
             const fs = require('fs');
             const summaryPath = '${{ steps.audit_delta.outputs.summary_markdown }}';
-            const summary = fs.readFileSync(summaryPath, 'utf8');
+            const usagePath = '${{ steps.csharp_usage.outputs.summary_markdown }}';
+            const assetSummary = fs.readFileSync(summaryPath, 'utf8');
+            const usageSummary = fs.existsSync(usagePath) ? fs.readFileSync(usagePath, 'utf8') : 'C# usage audit did not run.';
+            const summary = `${assetSummary}\n\n${usageSummary}`;
             const artifactUrl = '${{ steps.upload.outputs.artifact-url }}';
             const marker = '<!-- asset-usage-audit -->';
             const body = `${marker}\n${summary}\n📎 [Download full asset audit artifacts](${artifactUrl})`;
@@ -139,6 +165,8 @@ jobs:
         run: |
           {
             cat "${{ steps.audit_delta.outputs.summary_markdown }}";
+            echo "";
+            cat "${{ steps.csharp_usage.outputs.summary_markdown }}";
             echo "\n📎 [Download full asset audit artifacts](${{ steps.upload.outputs.artifact-url }})";
           } >> "$GITHUB_STEP_SUMMARY"
 
@@ -146,4 +174,10 @@ jobs:
         if: ${{ env.AUDIT_WARN_ONLY != 'true' && steps.audit_delta.outputs.new_unused_count != '' && steps.audit_delta.outputs.new_unused_count != '0' }}
         run: |
           echo "New unused assets detected outside the whitelist. See the artifact for details." >&2
+          exit 1
+
+      - name: Enforce unused-legacy-member policy
+        if: ${{ env.LEGACY_WARN_ONLY != 'true' && steps.csharp_usage.outputs.new_unused_count != '' && steps.csharp_usage.outputs.new_unused_count != '0' }}
+        run: |
+          echo "New unused public/serialized members detected outside the whitelist. See the usage audit summary for details." >&2
           exit 1
