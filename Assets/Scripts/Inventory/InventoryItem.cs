@@ -11,4 +11,11 @@ public class InventoryItem
     public bool isStackable = true;
     public int currentStack = 1;
     public int maxStack = 99;
+
+    public virtual InventoryItem CloneForStack(int stackSize)
+    {
+        InventoryItem clone = (InventoryItem)MemberwiseClone();
+        clone.currentStack = stackSize;
+        return clone;
+    }
 }
