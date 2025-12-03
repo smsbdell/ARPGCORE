@@ -57,6 +57,59 @@ public class Inventory : MonoBehaviour
         return true;
     }
 
+    public bool ContainsAtLeast(string itemId, int amount)
+    {
+        if (string.IsNullOrWhiteSpace(itemId) || amount <= 0)
+            return false;
+
+        return GetTotalCount(itemId) >= amount;
+    }
+
+    public int GetTotalCount(string itemId)
+    {
+        int count = 0;
+        if (string.IsNullOrWhiteSpace(itemId))
+            return count;
+
+        foreach (InventoryItem item in items)
+        {
+            if (item == null)
+                continue;
+
+            if (string.Equals(item.itemId, itemId, System.StringComparison.Ordinal))
+            {
+                count += Mathf.Max(0, item.currentStack);
+            }
+        }
+
+        return count;
+    }
+
+    public bool TryConsume(string itemId, int amount)
+    {
+        if (string.IsNullOrWhiteSpace(itemId) || amount <= 0)
+            return false;
+
+        int remaining = amount;
+        for (int i = items.Count - 1; i >= 0 && remaining > 0; i--)
+        {
+            InventoryItem item = items[i];
+            if (item == null || !string.Equals(item.itemId, itemId, System.StringComparison.Ordinal))
+                continue;
+
+            int toTake = Mathf.Min(item.currentStack, remaining);
+            item.currentStack -= toTake;
+            remaining -= toTake;
+
+            if (item.currentStack <= 0)
+            {
+                items.RemoveAt(i);
+            }
+        }
+
+        return remaining == 0;
+    }
+
     public void RemoveItem(InventoryItem item)
     {
         items.Remove(item);

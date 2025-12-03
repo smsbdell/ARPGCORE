@@ -74,28 +74,17 @@ public class ItemGenerator : MonoBehaviour
             return null;
         }
 
-        StatModifier finalModifier = template.modifiers != null ? template.modifiers.Clone() : new StatModifier();
         List<AffixInstance> rolledAffixes = RollAffixes(template, itemLevel, rarity);
 
-        foreach (AffixInstance affix in rolledAffixes)
-        {
-            finalModifier.AddEntriesFrom(affix.BuildModifier());
-        }
-
-        EquipmentItem generatedItem = ScriptableObject.CreateInstance<EquipmentItem>();
-        generatedItem.id = template.id;
-        generatedItem.displayName = BuildGeneratedName(template.displayName, rolledAffixes);
-        generatedItem.description = template.description;
-        generatedItem.icon = template.icon;
-        generatedItem.slot = template.slot;
-        generatedItem.tags = template.tags;
-        generatedItem.modifiers = finalModifier;
+        EquipmentItem generatedItem = BuildEquipmentFromTemplate(template, rolledAffixes);
 
         InventoryEquipmentItem inventoryItem = new InventoryEquipmentItem
         {
             equipmentId = template.id,
             equipment = generatedItem,
             affixes = rolledAffixes,
+            itemLevel = itemLevel,
+            rarity = rarity,
             itemId = template.id,
             displayName = generatedItem.displayName,
             description = template.description,
@@ -108,13 +97,13 @@ public class ItemGenerator : MonoBehaviour
         return inventoryItem;
     }
 
-    private List<AffixInstance> RollAffixes(EquipmentItem template, int itemLevel, EquipmentRarity rarity)
+    public List<AffixInstance> RollAffixes(EquipmentItem template, int itemLevel, EquipmentRarity rarity)
     {
         List<AffixInstance> results = new List<AffixInstance>();
         if (affixPool == null)
             return results;
 
-        List<AffixDefinition> eligible = affixPool.GetEligibleAffixes(template, itemLevel);
+        List<AffixDefinition> eligible = GetEligibleAffixes(template, itemLevel);
         if (eligible.Count == 0)
             return results;
 
@@ -134,7 +123,7 @@ public class ItemGenerator : MonoBehaviour
         return results;
     }
 
-    private AffixDefinition DrawWeightedAffix(List<AffixDefinition> candidates)
+    public AffixDefinition DrawWeightedAffix(List<AffixDefinition> candidates)
     {
         float totalWeight = 0f;
         foreach (AffixDefinition affix in candidates)
@@ -164,7 +153,7 @@ public class ItemGenerator : MonoBehaviour
         return candidates[candidates.Count - 1];
     }
 
-    private int GetAffixCountForRarity(EquipmentRarity rarity)
+    public int GetAffixCountForRarity(EquipmentRarity rarity)
     {
         InitializeRarityLookup();
         if (_rarityLookup.TryGetValue(rarity, out RarityDefinition definition))
@@ -173,6 +162,54 @@ public class ItemGenerator : MonoBehaviour
         }
 
         return 0;
+    }
+
+    public int GetMaxAffixesForRarity(EquipmentRarity rarity)
+    {
+        InitializeRarityLookup();
+        if (_rarityLookup.TryGetValue(rarity, out RarityDefinition definition))
+        {
+            return definition.maxAffixes;
+        }
+
+        return 0;
+    }
+
+    public List<AffixDefinition> GetEligibleAffixes(EquipmentItem template, int itemLevel)
+    {
+        if (affixPool == null)
+            return new List<AffixDefinition>();
+
+        return affixPool.GetEligibleAffixes(template, itemLevel);
+    }
+
+    public EquipmentItem BuildEquipmentFromTemplate(EquipmentItem template, List<AffixInstance> affixes)
+    {
+        if (template == null)
+            return null;
+
+        StatModifier finalModifier = template.modifiers != null ? template.modifiers.Clone() : new StatModifier();
+        if (affixes != null)
+        {
+            foreach (AffixInstance affix in affixes)
+            {
+                if (affix == null)
+                    continue;
+
+                finalModifier.AddEntriesFrom(affix.BuildModifier());
+            }
+        }
+
+        EquipmentItem generatedItem = ScriptableObject.CreateInstance<EquipmentItem>();
+        generatedItem.id = template.id;
+        generatedItem.displayName = BuildGeneratedName(template.displayName, affixes);
+        generatedItem.description = template.description;
+        generatedItem.icon = template.icon;
+        generatedItem.slot = template.slot;
+        generatedItem.tags = template.tags;
+        generatedItem.modifiers = finalModifier;
+
+        return generatedItem;
     }
 
     private void InitializeRarityLookup()
