@@ -15,7 +15,7 @@ MonoImporter:
   - ring8: {instanceID: 0}
   - ring9: {instanceID: 0}
   - ring10: {instanceID: 0}
-  - mainHand: {fileID: 11400000, guid: 7469d8282cfcf0c4b9d32a22e5237201, type: 2}
+  - mainHand: {instanceID: 0}
   - offHand: {instanceID: 0}
   - boots: {instanceID: 0}
   - gloves: {instanceID: 0}
