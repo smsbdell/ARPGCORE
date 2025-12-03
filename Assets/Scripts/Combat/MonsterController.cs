@@ -19,11 +19,19 @@ public class MonsterController : MonoBehaviour
     private PlayerProgression _playerProgression;
     private Action<MonsterController> _returnToPool;
     private float _nextDamageTime = 0f;
+    private bool _baseStatsCached;
+    private float _baseMoveSpeed;
+    private float _baseContactDamage;
+    private float _baseXpReward;
+    private float _baseMaxHealth;
+    private float _baseArmor;
+    private float _baseDodgeChance;
 
     private void Awake()
     {
         _rb = GetComponent<Rigidbody2D>();
         _stats = GetComponent<CharacterStats>();
+        CacheBaseStats();
     }
 
     private void Start()
@@ -106,6 +114,14 @@ public class MonsterController : MonoBehaviour
 
     public void ResetState()
     {
+        ResetState(MonsterSpawnContext.Default);
+    }
+
+    public void ResetState(MonsterSpawnContext spawnContext)
+    {
+        CacheBaseStats();
+
+        ApplySpawnContext(spawnContext);
         _nextDamageTime = 0f;
         _rb.linearVelocity = Vector2.zero;
         _stats?.ResetHealth();
@@ -137,5 +153,39 @@ public class MonsterController : MonoBehaviour
         _playerProgression = playerObj.GetComponent<PlayerProgression>();
         if (_playerProgression == null)
             Debug.LogWarning("MonsterController: PlayerProgression component not found on player.");
+    }
+
+    private void CacheBaseStats()
+    {
+        if (_baseStatsCached)
+            return;
+
+        _baseStatsCached = true;
+        _baseMoveSpeed = moveSpeed;
+        _baseContactDamage = contactDamage;
+        _baseXpReward = xpReward;
+
+        if (_stats != null)
+        {
+            _baseMaxHealth = Mathf.Max(1f, _stats.maxHealth);
+            _baseArmor = _stats.armor;
+            _baseDodgeChance = _stats.dodgeChance;
+        }
+    }
+
+    private void ApplySpawnContext(MonsterSpawnContext spawnContext)
+    {
+        MonsterSpawnContext normalized = spawnContext.WithDefaults();
+
+        moveSpeed = _baseMoveSpeed * normalized.MoveSpeedMultiplier;
+        contactDamage = _baseContactDamage * normalized.ContactDamageMultiplier;
+        xpReward = _baseXpReward * normalized.XpRewardMultiplier;
+
+        if (_stats != null)
+        {
+            _stats.maxHealth = _baseMaxHealth * normalized.MaxHealthMultiplier;
+            _stats.armor = _baseArmor * normalized.ArmorMultiplier;
+            _stats.dodgeChance = Mathf.Clamp01(_baseDodgeChance * normalized.DodgeChanceMultiplier);
+        }
     }
 }

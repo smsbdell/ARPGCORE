@@ -13,6 +13,7 @@ public class WaveManager : MonoBehaviour
 
     [Header("References")]
     [SerializeField] private MonsterSpawner _monsterSpawner;
+    [SerializeField] private MonsterWaveScalingConfig _waveScalingConfig;
 
     [Header("Wave Timing")]
     [Tooltip("How long a wave runs before pausing spawning.")]
@@ -99,6 +100,7 @@ public class WaveManager : MonoBehaviour
     private void StartWave(int waveIndex)
     {
         _monsterSpawner.DespawnAll();
+        _monsterSpawner.SetSpawnContext(BuildSpawnContext(waveIndex));
         _monsterSpawner.UpdateSpawnSettings(CalculateSpawnInterval(waveIndex), CalculateMaxMonsters(waveIndex));
         _monsterSpawner.SetSpawningEnabled(true);
 
@@ -157,6 +159,16 @@ public class WaveManager : MonoBehaviour
 
         int scaledMax = Mathf.RoundToInt(_baseMaxMonsters * multiplier);
         return Mathf.Max(0, scaledMax);
+    }
+
+    private MonsterSpawnContext BuildSpawnContext(int waveIndex)
+    {
+        if (_waveScalingConfig != null)
+            return _waveScalingConfig.GetContextForWave(waveIndex);
+
+        MonsterSpawnContext context = MonsterSpawnContext.Default;
+        context.WaveIndex = Mathf.Max(1, waveIndex);
+        return context;
     }
 
     private void StopWaveRoutine()

@@ -19,6 +19,7 @@ public class MonsterSpawner : MonoBehaviour
     private readonly Queue<GameObject> _monsterPool = new Queue<GameObject>();
     private int _spawnsThisFrame;
     private bool _spawningEnabled = true;
+    private MonsterSpawnContext _spawnContext = MonsterSpawnContext.Default;
 
     private void Awake()
     {
@@ -62,7 +63,7 @@ public class MonsterSpawner : MonoBehaviour
         MonsterController controller = monster.GetComponent<MonsterController>();
 
         monster.transform.SetPositionAndRotation(spawnPos, Quaternion.identity);
-        controller?.ResetState();
+        controller?.ResetState(_spawnContext);
 
         monster.SetActive(true);
         _activeMonsters.Add(monster);
@@ -90,7 +91,7 @@ public class MonsterSpawner : MonoBehaviour
         if (controller != null)
         {
             controller.SetReturnToPool(ReturnMonsterToPool);
-            controller.ResetState();
+            controller.ResetState(_spawnContext);
         }
 
         Rigidbody2D rb = monster.GetComponent<Rigidbody2D>();
@@ -126,6 +127,11 @@ public class MonsterSpawner : MonoBehaviour
         maxMonsters = Mathf.Max(0, maxMonstersCount);
         _spawnTimer = Mathf.Min(spawnInterval, Mathf.Max(0f, _spawnTimer));
         PrewarmPool();
+    }
+
+    public void SetSpawnContext(MonsterSpawnContext context)
+    {
+        _spawnContext = context.WithDefaults();
     }
 
     public void DespawnAll()
