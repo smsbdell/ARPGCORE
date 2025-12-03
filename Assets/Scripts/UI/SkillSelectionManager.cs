@@ -468,6 +468,9 @@ public class SkillSelectionManager : MonoBehaviour
         if (ability == null)
             return false;
 
+        if (!IsAbilityAllowedByStats(ability))
+            return false;
+
         if (_playerEquipment == null || _playerEquipment.mainHand == null)
             return true;
 
@@ -529,6 +532,35 @@ public class SkillSelectionManager : MonoBehaviour
             foreach (string abilityTag in abilityTags)
             {
                 if (string.Equals(weaponTag, abilityTag, StringComparison.OrdinalIgnoreCase))
+                    return true;
+            }
+        }
+
+        return false;
+    }
+
+    private bool IsAbilityAllowedByStats(AbilityData ability)
+    {
+        if (ability == null)
+            return false;
+
+        if (_stats == null || _stats.allowedSkillTags == null || _stats.allowedSkillTags.Count == 0)
+            return true;
+
+        if (ability.tags == null || ability.tags.Length == 0)
+            return false;
+
+        foreach (string requiredTag in _stats.allowedSkillTags)
+        {
+            if (string.IsNullOrWhiteSpace(requiredTag))
+                continue;
+
+            foreach (string abilityTag in ability.tags)
+            {
+                if (string.IsNullOrWhiteSpace(abilityTag))
+                    continue;
+
+                if (string.Equals(requiredTag.Trim(), abilityTag.Trim(), StringComparison.OrdinalIgnoreCase))
                     return true;
             }
         }
