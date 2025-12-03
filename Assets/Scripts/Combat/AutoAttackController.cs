@@ -138,7 +138,13 @@ public class AutoAttackController : MonoBehaviour
         if (isCrit && _stats != null)
         {
             primaryDamage *= _stats.critMultiplier;
-            secondaryDamage *= _stats.critMultiplier;
+
+            // Keep secondary effects for weapon-based abilities tied to ability.baseDamage
+            // instead of inheriting the primary weapon roll or crit bonuses.
+            if (!ability.usesWeaponDamage)
+            {
+                secondaryDamage *= _stats.critMultiplier;
+            }
         }
 
         Debug.Log($"Casting ability: {ability.displayName} (Lv {level}) for {primaryDamage} damage (crit: {isCrit})");
