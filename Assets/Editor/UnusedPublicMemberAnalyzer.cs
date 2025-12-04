@@ -45,6 +45,11 @@ public static class UnusedPublicMemberAnalyzer
         string summaryJsonPath = Path.Combine(logDirectory, SummaryJsonName);
 
         var solutionPath = FindSolution(projectRoot);
+        if (string.IsNullOrEmpty(solutionPath))
+        {
+            Debug.LogWarning("C# usage analysis canceled: no solution selected.");
+            return;
+        }
         var startInfo = CreateProcessStartInfo(projectRoot, scriptPath, summaryMarkdownPath, summaryJsonPath, solutionPath);
 
         var standardOutput = new StringBuilder();
@@ -156,8 +161,24 @@ public static class UnusedPublicMemberAnalyzer
 
     private static string? FindSolution(string projectRoot)
     {
-        return Directory.EnumerateFiles(projectRoot, "*.sln", SearchOption.TopDirectoryOnly)
-            .FirstOrDefault();
+        var solutions = Directory
+            .EnumerateFiles(projectRoot, "*.sln", SearchOption.TopDirectoryOnly)
+            .ToList();
+
+        if (solutions.Count == 1)
+        {
+            return solutions[0];
+        }
+
+        string promptTitle = "Select solution for C# usage analysis";
+        string promptMessage = solutions.Count == 0
+            ? "No solution found automatically; please choose one."
+            : $"Multiple solutions found ({solutions.Count}); please choose one.";
+
+        Debug.Log(promptMessage);
+
+        string chosenSolution = EditorUtility.OpenFilePanel(promptTitle, projectRoot, "sln");
+        return string.IsNullOrEmpty(chosenSolution) ? null : chosenSolution;
     }
 
     private static string BuildSummaryPreview(string summaryMarkdownPath)
