@@ -10,3 +10,7 @@ Assets/Editor/
 *.csproj
 *.unityproj
 *.sln
+
+# Explicitly tracked analyzer solution
+!ARPGCORE.Adhoc.csproj
+!ARPGCORE.sln

@@ -226,24 +226,22 @@ internal static class UsageAnalyzer
 
     private static async Task<(Workspace Workspace, Solution? Solution, string Description)> LoadSolutionAsync(Options options)
     {
-        if (!string.IsNullOrWhiteSpace(options.SolutionPath) && File.Exists(options.SolutionPath))
+        var explicitPath = NormalizeToExisting(options.SolutionPath);
+        if (explicitPath != null)
         {
-            MSBuildLocator.RegisterDefaults();
-            var workspace = MSBuildWorkspace.Create();
-            var solution = await workspace.OpenSolutionAsync(options.SolutionPath).ConfigureAwait(false);
-            return (workspace, solution, NormalizePath(Path.GetRelativePath(options.ProjectRoot, options.SolutionPath)));
+            var description = NormalizePath(Path.GetRelativePath(options.ProjectRoot, explicitPath));
+            return await LoadWorkspaceForPathAsync(explicitPath, description).ConfigureAwait(false);
         }
 
         var discovered = Directory.EnumerateFiles(options.ProjectRoot, "*.sln", SearchOption.AllDirectories)
+            .Concat(Directory.EnumerateFiles(options.ProjectRoot, "*.csproj", SearchOption.AllDirectories))
             .OrderBy(path => path.Length)
             .FirstOrDefault();
 
         if (discovered != null && File.Exists(discovered))
         {
-            MSBuildLocator.RegisterDefaults();
-            var workspace = MSBuildWorkspace.Create();
-            var solution = await workspace.OpenSolutionAsync(discovered).ConfigureAwait(false);
-            return (workspace, solution, NormalizePath(Path.GetRelativePath(options.ProjectRoot, discovered)));
+            var description = NormalizePath(Path.GetRelativePath(options.ProjectRoot, discovered));
+            return await LoadWorkspaceForPathAsync(discovered, description).ConfigureAwait(false);
         }
 
         var sourceFiles = DiscoverSourceFiles(options.ProjectRoot).ToList();
@@ -279,6 +277,32 @@ internal static class UsageAnalyzer
         }
 
         return (adhocWorkspace, adhocWorkspace.CurrentSolution, "<ad-hoc>");
+    }
+
+    private static string? NormalizeToExisting(string? path)
+    {
+        if (string.IsNullOrWhiteSpace(path))
+        {
+            return null;
+        }
+
+        var full = Path.GetFullPath(path);
+        return File.Exists(full) ? full : null;
+    }
+
+    private static async Task<(Workspace Workspace, Solution? Solution, string Description)> LoadWorkspaceForPathAsync(string path, string description)
+    {
+        MSBuildLocator.RegisterDefaults();
+        var workspace = MSBuildWorkspace.Create();
+
+        if (path.EndsWith(".csproj", StringComparison.OrdinalIgnoreCase))
+        {
+            var project = await workspace.OpenProjectAsync(path).ConfigureAwait(false);
+            return (workspace, project.Solution, description);
+        }
+
+        var solution = await workspace.OpenSolutionAsync(path).ConfigureAwait(false);
+        return (workspace, solution, description);
     }
 
     private static IEnumerable<string> DiscoverSourceFiles(string root)

@@ -44,7 +44,13 @@ public static class UnusedPublicMemberAnalyzer
         string summaryMarkdownPath = Path.Combine(logDirectory, SummaryMarkdownName);
         string summaryJsonPath = Path.Combine(logDirectory, SummaryJsonName);
 
-        var solutionPath = FindSolution(projectRoot);
+        var solutionPath = FindSolutionOrProject(projectRoot);
+        if (string.IsNullOrEmpty(solutionPath))
+        {
+            Debug.LogWarning("C# usage analysis canceled: no solution selected.");
+            return;
+        }
+        Debug.Log($"Running C# usage analysis using: {solutionPath}");
         var startInfo = CreateProcessStartInfo(projectRoot, scriptPath, summaryMarkdownPath, summaryJsonPath, solutionPath);
 
         var standardOutput = new StringBuilder();
@@ -154,10 +160,30 @@ public static class UnusedPublicMemberAnalyzer
         return "dotnet";
     }
 
-    private static string? FindSolution(string projectRoot)
+    private static string? FindSolutionOrProject(string projectRoot)
     {
-        return Directory.EnumerateFiles(projectRoot, "*.sln", SearchOption.TopDirectoryOnly)
-            .FirstOrDefault();
+        var solutions = Directory
+            .EnumerateFiles(projectRoot, "*.sln", SearchOption.TopDirectoryOnly)
+            .ToList();
+        if (solutions.Count == 0)
+        {
+            solutions.AddRange(Directory.EnumerateFiles(projectRoot, "*.csproj", SearchOption.TopDirectoryOnly));
+        }
+
+        if (solutions.Count == 1)
+        {
+            return solutions[0];
+        }
+
+        string promptTitle = "Select solution or project for C# usage analysis";
+        string promptMessage = solutions.Count == 0
+            ? "No solution or project found automatically; please choose one."
+            : $"Multiple solutions/projects found ({solutions.Count}); please choose one.";
+
+        Debug.Log(promptMessage);
+
+        string chosenSolution = EditorUtility.OpenFilePanel(promptTitle, projectRoot, "sln,csproj");
+        return string.IsNullOrEmpty(chosenSolution) ? null : chosenSolution;
     }
 
     private static string BuildSummaryPreview(string summaryMarkdownPath)
