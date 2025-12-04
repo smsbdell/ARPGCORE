@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -22,6 +23,8 @@ public class MonsterSpawner : MonoBehaviour
     private MonsterSpawnContext _spawnContext = MonsterSpawnContext.Default;
 
     public int ActiveMonsterCount => _activeMonsters.Count;
+
+    public event Action<int> OnActiveMonsterCountChanged;
 
     private void Awake()
     {
@@ -69,6 +72,7 @@ public class MonsterSpawner : MonoBehaviour
 
         monster.SetActive(true);
         _activeMonsters.Add(monster);
+        NotifyActiveMonsterCountChanged();
         return true;
     }
 
@@ -115,6 +119,7 @@ public class MonsterSpawner : MonoBehaviour
 
         RegisterForPooling(monster);
         _monsterPool.Enqueue(monster);
+        NotifyActiveMonsterCountChanged();
     }
 
     public void SetSpawningEnabled(bool enabled)
@@ -148,6 +153,12 @@ public class MonsterSpawner : MonoBehaviour
         _activeMonsters.Clear();
         _spawnTimer = spawnInterval;
         _spawnsThisFrame = 0;
+        NotifyActiveMonsterCountChanged();
+    }
+
+    private void NotifyActiveMonsterCountChanged()
+    {
+        OnActiveMonsterCountChanged?.Invoke(_activeMonsters.Count);
     }
 
     private Vector3 GetSpawnPositionAroundPlayer()
