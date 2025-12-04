@@ -159,7 +159,7 @@ public static class UnusedPublicMemberAnalyzer
         return "dotnet";
     }
 
-    private static string? FindSolution(string projectRoot)
+    private static string? FindSolutionOrProject(string projectRoot)
     {
         var solutions = Directory
             .EnumerateFiles(projectRoot, "*.sln", SearchOption.TopDirectoryOnly)
