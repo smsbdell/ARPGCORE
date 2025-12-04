@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Text.Json;
 using UnityEditor;
 using UnityEngine;
 
@@ -180,30 +179,16 @@ public static class UnusedPublicMemberAnalyzer
 
         try
         {
-            using var document = JsonDocument.Parse(File.ReadAllText(summaryJsonPath));
-            var root = document.RootElement;
+            var json = File.ReadAllText(summaryJsonPath);
+            var parsed = JsonUtility.FromJson<UsageSummaryData>(json) ?? new UsageSummaryData();
 
             return new UsageSummary
             {
-                SourceDescription = root.TryGetProperty("sourceDescription", out var sourceDescription)
-                    ? sourceDescription.GetString()
-                    : null,
-                Status = root.TryGetProperty("status", out var status)
-                    ? status.GetString()
-                    : null,
-                StatusMessage = root.TryGetProperty("statusMessage", out var statusMessage)
-                    ? statusMessage.GetString()
-                    : null,
-                UnusedCount = root.TryGetProperty("unused_count", out var unusedCount)
-                    ? unusedCount.GetInt32()
-                    : root.TryGetProperty("unusedCount", out var legacyUnusedCount)
-                        ? legacyUnusedCount.GetInt32()
-                        : 0,
-                NewUnusedCount = root.TryGetProperty("new_unused_count", out var newUnusedCount)
-                    ? newUnusedCount.GetInt32()
-                    : root.TryGetProperty("newUnusedCount", out var legacyNewUnusedCount)
-                        ? legacyNewUnusedCount.GetInt32()
-                        : 0
+                SourceDescription = FirstNonEmpty(parsed.sourceDescription, parsed.SourceDescription),
+                Status = FirstNonEmpty(parsed.status, parsed.Status),
+                StatusMessage = FirstNonEmpty(parsed.statusMessage, parsed.StatusMessage),
+                UnusedCount = parsed.unused_count != 0 ? parsed.unused_count : parsed.unusedCount,
+                NewUnusedCount = parsed.new_unused_count != 0 ? parsed.new_unused_count : parsed.newUnusedCount
             };
         }
         catch (Exception exception)
@@ -225,6 +210,26 @@ public static class UnusedPublicMemberAnalyzer
         public string? StatusMessage;
         public int UnusedCount;
         public int NewUnusedCount;
+    }
+
+    [Serializable]
+    private class UsageSummaryData
+    {
+        public string? sourceDescription;
+        public string? SourceDescription;
+        public string? status;
+        public string? Status;
+        public string? statusMessage;
+        public string? StatusMessage;
+        public int unused_count;
+        public int unusedCount;
+        public int new_unused_count;
+        public int newUnusedCount;
+    }
+
+    private static string? FirstNonEmpty(string? first, string? second)
+    {
+        return string.IsNullOrWhiteSpace(first) ? second : first;
     }
 }
 #endif
