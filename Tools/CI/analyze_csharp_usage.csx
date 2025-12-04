@@ -122,9 +122,16 @@ internal sealed class Options
             }
         }
 
+        var projectRootFullPath = Path.GetFullPath(projectRoot);
+        var defaultSolutionPath = Path.Combine(projectRootFullPath, "ARPGCORE.sln");
+        if (string.IsNullOrWhiteSpace(solutionPath) && File.Exists(defaultSolutionPath))
+        {
+            solutionPath = defaultSolutionPath;
+        }
+
         return new Options
         {
-            ProjectRoot = Path.GetFullPath(projectRoot),
+            ProjectRoot = projectRootFullPath,
             SolutionPath = solutionPath,
             SummaryMarkdown = summaryMd,
             SummaryJson = summaryJson,

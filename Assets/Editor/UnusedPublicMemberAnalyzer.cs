@@ -161,6 +161,14 @@ public static class UnusedPublicMemberAnalyzer
 
     private static string? FindSolutionOrProject(string projectRoot)
     {
+        string knownSolutionPath = Path.Combine(projectRoot, "ARPGCORE.sln");
+        if (File.Exists(knownSolutionPath))
+        {
+            return knownSolutionPath;
+        }
+
+        Debug.LogWarning($"Expected solution not found at {knownSolutionPath}; prompting for a solution file.");
+
         var solutions = Directory
             .EnumerateFiles(projectRoot, "*.sln", SearchOption.TopDirectoryOnly)
             .ToList();
