@@ -128,8 +128,7 @@ public static class UnusedPublicMemberAnalyzer
 
         string runner = FindAnalyzerRunner();
         bool usesDotnet = runner.Equals("dotnet", StringComparison.OrdinalIgnoreCase);
-
-        return new ProcessStartInfo
+        var startInfo = new ProcessStartInfo
         {
             FileName = runner,
             Arguments = usesDotnet ? $"script {arguments}" : arguments.ToString(),
@@ -139,6 +138,14 @@ public static class UnusedPublicMemberAnalyzer
             UseShellExecute = false,
             CreateNoWindow = true
         };
+
+        string scriptProjectPath = Path.Combine(projectRoot, "ARPGCORE.Adhoc.csproj");
+        if (File.Exists(scriptProjectPath))
+        {
+            startInfo.EnvironmentVariables["DOTNET_SCRIPT_PROJECT_FILE"] = scriptProjectPath;
+        }
+
+        return startInfo;
     }
 
     private static string FindAnalyzerRunner()
@@ -161,6 +168,14 @@ public static class UnusedPublicMemberAnalyzer
 
     private static string? FindSolutionOrProject(string projectRoot)
     {
+        string knownSolutionPath = Path.Combine(projectRoot, "ARPGCORE.sln");
+        if (File.Exists(knownSolutionPath))
+        {
+            return knownSolutionPath;
+        }
+
+        Debug.LogWarning($"Expected solution not found at {knownSolutionPath}; prompting for a solution file.");
+
         var solutions = Directory
             .EnumerateFiles(projectRoot, "*.sln", SearchOption.TopDirectoryOnly)
             .ToList();
