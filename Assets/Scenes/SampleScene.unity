@@ -5312,6 +5312,7 @@ GameObject:
   m_Component:
   - component: {fileID: 892884144}
   - component: {fileID: 892884143}
+  - component: {fileID: 892884145}
   m_Layer: 0
   m_Name: MonsterSpawner
   m_TagString: Untagged
@@ -5330,12 +5331,90 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 29b304c44ed24ff4ebd5feb4d5a4c0bf, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier:
   monsterPrefab: {fileID: 2549297368016169675, guid: e63ea55b1d99adc47bc62b6527f53809, type: 3}
   player: {fileID: 608403053}
   spawnInterval: 0.1
   maxMonsters: 5
   spawnBuffer: 5
+  maxSpawnsPerFrame: 3
+--- !u!114 &892884145
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 892884142}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b9423803762d429897d680b26df2a189, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  _monsterSpawner: {fileID: 892884143}
+  _waveScalingConfig: {fileID: 0}
+  _waveDuration: 30
+  _interWaveDelay: 5
+  _autoStart: 1
+  _baseSpawnInterval: 2
+  _baseMaxMonsters: 30
+  _spawnIntervalCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: -0.06666667
+      outSlope: -0.06666667
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 10
+      value: 0.4
+      inSlope: -0.06666667
+      outSlope: -0.06666667
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  _maxMonstersCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0.11111111
+      outSlope: 0.11111111
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 10
+      value: 2
+      inSlope: 0.11111111
+      outSlope: 0.11111111
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  _onWaveStarted:
+    m_PersistentCalls:
+      m_Calls: []
+  _onWaveEnded:
+    m_PersistentCalls:
+      m_Calls: []
+  _onInterWaveCountdown:
+    m_PersistentCalls:
+      m_Calls: []
+  _currentWave: 0
 --- !u!4 &892884144
 Transform:
   m_ObjectHideFlags: 0
@@ -9890,6 +9969,163 @@ MonoBehaviour:
   m_renderer: {fileID: 0}
   m_subTextObjects: []
   m_maskType: 0
+--- !u!1 &2100005000
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2100005001}
+  - component: {fileID: 2100005002}
+  m_Layer: 0
+  m_Name: SceneFlowController
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2100005001
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2100005000}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 2100005011}
+  - {fileID: 2100005021}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2100005002
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2100005000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 173f1bb0cb584b6cb563395d265267c3, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  _baseCampSceneName: BaseCamp
+  _combatSceneName: SampleScene
+  _waveModes:
+  - id: standard
+    displayName: Standard Waves
+    description: Balanced monster growth tuned for steady runs.
+    scalingConfig: {fileID: 0}
+    totalWaves: 10
+  - id: onslaught
+    displayName: Onslaught
+    description: Spawns ramp faster for testing loadouts.
+    scalingConfig: {fileID: 0}
+    totalWaves: 10
+  _areaOptions:
+  - id: forest
+    displayName: Whispering Forest
+    description: Cooldowns between waves give room to breathe.
+  - id: ruins
+    displayName: Sunken Ruins
+    description: Tighter arenas that favor close-range builds.
+--- !u!1 &2100005010
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2100005011}
+  - component: {fileID: 2100005012}
+  m_Layer: 0
+  m_Name: BaseCampUI
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2100005011
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2100005010}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2100005001}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2100005012
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2100005010}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6f5a304b9c734fdd90498d46e6fe88b1, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  _sceneFlowController: {fileID: 2100005002}
+--- !u!1 &2100005020
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2100005021}
+  - component: {fileID: 2100005022}
+  m_Layer: 0
+  m_Name: CombatOverlayController
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2100005021
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2100005020}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2100005001}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2100005022
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2100005020}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 42e8dfe0fa274fcf82b09d0fb9275e23, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  _sceneFlowController: {fileID: 2100005002}
+  _showWaveDebugOverlay: 1
 --- !u!1 &1900000230
 GameObject:
   m_ObjectHideFlags: 0
