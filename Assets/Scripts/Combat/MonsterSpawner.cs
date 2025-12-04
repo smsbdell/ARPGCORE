@@ -171,7 +171,7 @@ public class MonsterSpawner : MonoBehaviour
         float screenRadius = Mathf.Sqrt(halfWidth * halfWidth + halfHeight * halfHeight);
         float spawnRadius = screenRadius + spawnBuffer;
 
-        float angleDeg = Random.Range(0f, 360f);
+        float angleDeg = UnityEngine.Random.Range(0f, 360f);
         float angleRad = angleDeg * Mathf.Deg2Rad;
         Vector2 dir = new Vector2(Mathf.Cos(angleRad), Mathf.Sin(angleRad));
 
