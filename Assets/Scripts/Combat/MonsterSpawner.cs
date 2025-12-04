@@ -21,6 +21,8 @@ public class MonsterSpawner : MonoBehaviour
     private bool _spawningEnabled = true;
     private MonsterSpawnContext _spawnContext = MonsterSpawnContext.Default;
 
+    public int ActiveMonsterCount => _activeMonsters.Count;
+
     private void Awake()
     {
         PrewarmPool();

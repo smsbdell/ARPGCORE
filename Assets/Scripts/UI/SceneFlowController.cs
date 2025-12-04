@@ -14,6 +14,7 @@ public class SceneFlowController : MonoBehaviour
         public string displayName;
         [TextArea] public string description;
         public MonsterWaveScalingConfig scalingConfig;
+        [Min(0)] public int totalWaves = 10;
     }
 
     [Serializable]
@@ -56,6 +57,15 @@ public class SceneFlowController : MonoBehaviour
     private Canvas _combatCanvas;
     private Text _combatSummary;
 
+    [Header("Debug Options")]
+    [SerializeField] private bool _showWaveDebugOverlay;
+
+    private Text _waveDebugLabel;
+    private WaveManager _activeWaveManager;
+    private MonsterSpawner _activeSpawner;
+    private MonsterWaveScalingConfig _activeScalingConfig;
+    private int _totalWavesForMap;
+
     private void Awake()
     {
         if (Instance != null && Instance != this)
@@ -83,6 +93,14 @@ public class SceneFlowController : MonoBehaviour
         {
             SceneManager.sceneLoaded -= HandleSceneLoaded;
         }
+
+        DetachWaveManager();
+    }
+
+    private void Update()
+    {
+        if (_showWaveDebugOverlay)
+            UpdateWaveDebugLabel();
     }
 
     private void HandleSceneLoaded(Scene scene, LoadSceneMode mode)
@@ -213,6 +231,8 @@ public class SceneFlowController : MonoBehaviour
         waveManager.ConfigureForRun(spawner, selection.waveMode.scalingConfig, false);
         waveManager.StartWaves();
 
+        TrackActiveRun(waveManager, spawner, selection.waveMode.scalingConfig, selection.waveMode.totalWaves);
+
         BuildCombatOverlay();
         UpdateCombatOverlay(selection);
     }
@@ -226,6 +246,8 @@ public class SceneFlowController : MonoBehaviour
         MonsterSpawner spawner = FindObjectOfType<MonsterSpawner>();
         if (spawner != null)
             spawner.DespawnAll();
+
+        TrackActiveRun(null, null, null, 0);
     }
 
     private void BuildBaseCampUi()
@@ -266,15 +288,21 @@ public class SceneFlowController : MonoBehaviour
             return;
 
         _combatCanvas = CreateCanvas("CombatOverlay");
-        RectTransform panel = CreatePanel(_combatCanvas.transform, new Vector2(420f, 200f));
+        RectTransform panel = CreatePanel(_combatCanvas.transform, new Vector2(420f, _showWaveDebugOverlay ? 260f : 200f));
         panel.anchorMin = new Vector2(1f, 1f);
         panel.anchorMax = new Vector2(1f, 1f);
         panel.pivot = new Vector2(1f, 1f);
         panel.anchoredPosition = new Vector2(-20f, -20f);
 
-        _combatSummary = CreateText(panel, "CombatSummary", string.Empty, 14, TextAnchor.UpperLeft, new Vector2(-190f, 50f), new Vector2(380f, 120f));
+        _combatSummary = CreateText(panel, "CombatSummary", string.Empty, 14, TextAnchor.UpperLeft, new Vector2(-190f, _showWaveDebugOverlay ? 90f : 50f), new Vector2(380f, _showWaveDebugOverlay ? 80f : 120f));
         Button returnButton = CreateButton(panel, "ReturnButton", "Return to Base Camp", new Vector2(-120f, -50f), new Vector2(240f, 40f), ReturnToBaseCamp);
         returnButton.GetComponent<Image>().color = new Color(0.35f, 0.21f, 0.21f, 0.9f);
+
+        if (_showWaveDebugOverlay)
+        {
+            _waveDebugLabel = CreateText(panel, "WaveDebug", "Wave debug overlay initializing...", 12, TextAnchor.UpperLeft, new Vector2(-190f, 5f), new Vector2(380f, 120f));
+            _waveDebugLabel.color = new Color(0.8f, 0.9f, 1f, 1f);
+        }
 
         _combatCanvas.gameObject.SetActive(false);
     }
@@ -404,7 +432,8 @@ public class SceneFlowController : MonoBehaviour
                 id = "standard",
                 displayName = "Standard Waves",
                 description = "Balanced monster growth tuned for steady runs.",
-                scalingConfig = null
+                scalingConfig = null,
+                totalWaves = 10
             });
 
             _waveModes.Add(new WaveModeOption
@@ -412,7 +441,8 @@ public class SceneFlowController : MonoBehaviour
                 id = "onslaught",
                 displayName = "Onslaught",
                 description = "Spawns ramp faster for testing loadouts.",
-                scalingConfig = null
+                scalingConfig = null,
+                totalWaves = 10
             });
         }
 
@@ -486,5 +516,62 @@ public class SceneFlowController : MonoBehaviour
     {
         if (_baseCampCanvas != null)
             _baseCampCanvas.gameObject.SetActive(false);
+    }
+
+    private void TrackActiveRun(WaveManager waveManager, MonsterSpawner spawner, MonsterWaveScalingConfig scalingConfig, int totalWaves)
+    {
+        DetachWaveManager();
+
+        _activeWaveManager = waveManager;
+        _activeSpawner = spawner;
+        _activeScalingConfig = scalingConfig;
+        _totalWavesForMap = Mathf.Max(0, totalWaves);
+
+        if (_activeWaveManager != null)
+            _activeWaveManager.OnWaveStarted += HandleWaveStarted;
+
+        UpdateWaveDebugLabel();
+    }
+
+    private void DetachWaveManager()
+    {
+        if (_activeWaveManager != null)
+            _activeWaveManager.OnWaveStarted -= HandleWaveStarted;
+    }
+
+    private void HandleWaveStarted(int waveIndex)
+    {
+        UpdateWaveDebugLabel();
+    }
+
+    private void UpdateWaveDebugLabel()
+    {
+        if (!_showWaveDebugOverlay || _waveDebugLabel == null)
+            return;
+
+        if (_combatCanvas == null || !_combatCanvas.gameObject.activeSelf)
+        {
+            _waveDebugLabel.text = "Wave debug overlay inactive outside combat.";
+            return;
+        }
+
+        int currentWave = _activeWaveManager?.CurrentWave ?? 0;
+        string totalWaveText = _totalWavesForMap > 0 ? _totalWavesForMap.ToString() : "∞";
+        int monsterCount = _activeSpawner?.ActiveMonsterCount ?? 0;
+
+        MonsterSpawnContext context = (_activeScalingConfig != null && currentWave > 0)
+            ? _activeScalingConfig.GetContextForWave(currentWave)
+            : MonsterSpawnContext.Default;
+
+        _waveDebugLabel.text = "Wave Debug" +
+            $"\nWave: {currentWave}/{totalWaveText}" +
+            $"\nMonsters active: {monsterCount}" +
+            "\nDifficulty multipliers:" +
+            $"\n • Move Speed x{context.MoveSpeedMultiplier:0.00}" +
+            $"\n • Contact Damage x{context.ContactDamageMultiplier:0.00}" +
+            $"\n • Max Health x{context.MaxHealthMultiplier:0.00}" +
+            $"\n • Armor x{context.ArmorMultiplier:0.00}" +
+            $"\n • Dodge Chance x{context.DodgeChanceMultiplier:0.00}" +
+            $"\n • XP Reward x{context.XpRewardMultiplier:0.00}";
     }
 }
