@@ -44,7 +44,7 @@ public static class UnusedPublicMemberAnalyzer
         string summaryMarkdownPath = Path.Combine(logDirectory, SummaryMarkdownName);
         string summaryJsonPath = Path.Combine(logDirectory, SummaryJsonName);
 
-        var solutionPath = FindSolution(projectRoot);
+        var solutionPath = FindSolutionOrProject(projectRoot);
         if (string.IsNullOrEmpty(solutionPath))
         {
             Debug.LogWarning("C# usage analysis canceled: no solution selected.");
